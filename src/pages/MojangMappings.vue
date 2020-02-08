@@ -1,7 +1,9 @@
 <template>
   <q-page style="max-height: calc(100vh - 50px)">
     <div class="row" style="max-height: calc(100vh - 50px)">
-      <h3 class="col-8" style="margin: 10px 0 10px 0">Displaying Mojang Mappings for {{ versionId }}</h3>
+      <h3 class="col-8" style="margin: 10px 0 10px 0">
+        Displaying Mojang Mappings for {{ versionId }}
+      </h3>
       <q-input
         v-model="filter"
         @input="input"
@@ -54,41 +56,37 @@ export default {
     };
   },
   mounted() {
-    this.loadMojangVersions()
-      .then(() => {
-        this.loadMojangVersion({ versionId: this.versionId })
-          .then(() => {
-            this.loadMojangMappings({ versionId: this.versionId })
-              .then(() => {
-                this.parsedData = parseMojang(this.serverMappings[this.versionId]);
-              })
-              .catch(error => {
-                sendError("Error while loading mojang mappings: " + error);
-              });
-          })
-          .catch(error => {
-            sendError("Error while loading mojang version: " + error);
-          });
-      })
-      .catch(error => {
-        sendError("Error while loading mojang versions: " + error);
-      });
-
-    this.loadSpigotVersions()
-      .then(() => {
-        this.loadSpigotMappings({ versionId: this.versionId }).catch(error => {
-          sendError("Error while loading spigot mappings: " + error);
+    if (this.versionManifest) {
+      this.loadMojang();
+    } else {
+      this.loadMojangVersions()
+        .then(() => {
+          this.loadMojang();
+        })
+        .catch(error => {
+          sendError("Error while loading mojang versions: " + error);
         });
-      })
-      .catch(error => {
-        sendError("Error while loading spigot versions: " + error);
-      });
+    }
+
+    if (this.spigotVersions) {
+      this.loadSpigot();
+    } else {
+      this.loadSpigotVersions()
+        .then(() => {
+          this.loadSpigot();
+        })
+        .catch(error => {
+          sendError("Error while loading spigot versions: " + error);
+        });
+    }
   },
   computed: {
     ...mapState({
+      versionManifest: state => state.mojang.versionManifest,
       versions: state => state.mojang.versions,
       clientMappings: state => state.mojang.clientMappings,
-      serverMappings: state => state.mojang.serverMappings
+      serverMappings: state => state.mojang.serverMappings,
+      spigotVersions: state => state.spigot.versions
     }),
     keys() {
       return this.parsedData
@@ -123,6 +121,28 @@ export default {
     },
     input() {
       this.$refs.scroll.reset();
+    },
+    loadMojang() {
+      this.loadMojangVersion({ versionId: this.versionId })
+        .then(() => {
+          this.loadMojangMappings({ versionId: this.versionId })
+            .then(() => {
+              this.parsedData = parseMojang(
+                this.serverMappings[this.versionId]
+              );
+            })
+            .catch(error => {
+              sendError("Error while loading mojang mappings: " + error);
+            });
+        })
+        .catch(error => {
+          sendError("Error while loading mojang version: " + error);
+        });
+    },
+    loadSpigot() {
+      this.loadSpigotMappings({ versionId: this.versionId }).catch(error => {
+        sendError("Error while loading spigot mappings: " + error);
+      });
     }
   }
 };
