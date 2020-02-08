@@ -4,7 +4,11 @@ const routes = [
     component: () => import("layouts/MainLayout.vue"),
     children: [
       { path: "", component: () => import("pages/Index.vue") },
-      { path: "test", component: () => import("pages/Test.vue") }
+      { path: "mojang", component: () => import("pages/MojangIndex.vue") },
+      {
+        path: "mojang/:versionId",
+        component: () => import("pages/MojangMappings.vue")
+      }
     ]
   }
 ];

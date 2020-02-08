@@ -20,13 +20,13 @@
     >
       <q-scroll-area class="fit">
         <q-list padding>
-          <q-item clickable v-ripple to="/test">
+          <q-item clickable v-ripple to="/mojang">
             <q-item-section avatar>
-              <q-icon name="inbox" />
+              <q-icon name="play_arrow" />
             </q-item-section>
 
             <q-item-section>
-              Test
+              Mojang
             </q-item-section>
           </q-item>
         </q-list>

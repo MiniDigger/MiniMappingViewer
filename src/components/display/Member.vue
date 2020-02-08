@@ -28,8 +28,8 @@
 </template>
 
 <script>
-import Field from "components/Field";
-import Method from "components/Method";
+import Field from "components/display/Field";
+import Method from "components/display/Method";
 export default {
   name: "Member",
   components: {Method, Field},

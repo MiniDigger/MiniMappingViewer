@@ -1,7 +1,7 @@
 <template>
   <q-page style="max-height: calc(100vh - 50px)">
     <div class="row" style="max-height: calc(100vh - 50px)">
-      <h2 class="col-8" style="margin: 10px 0 10px 0">Test</h2>
+      <h3 class="col-8" style="margin: 10px 0 10px 0">Displaying Mojang Mappings for {{ versionId }}</h3>
       <q-input
         v-model="filter"
         @input="input"
@@ -22,7 +22,7 @@
         <q-virtual-scroll
           ref="scroll"
           :items="keys"
-          style="max-height: calc(100vh - 50px - 80px)"
+          style="max-height: calc(100vh - 50px - 50px - 20px)"
           :virtual-scroll-slice-size="15"
           separator
         >
@@ -41,10 +41,10 @@
 import { mapState, mapActions } from "vuex";
 import { sendError } from "src/api/notify";
 import { parseMojang } from "src/api/mappings";
-import Member from "components/Member";
+import Member from "components/display/Member";
 
 export default {
-  name: "Test",
+  name: "MojangMappings",
   components: { Member },
   data() {
     return {
@@ -54,14 +54,13 @@ export default {
     };
   },
   mounted() {
-    let versionId = "1.15.2";
     this.loadMojangVersions()
       .then(() => {
-        this.loadMojangVersion({ versionId: versionId })
+        this.loadMojangVersion({ versionId: this.versionId })
           .then(() => {
-            this.loadMojangMappings({ versionId: versionId })
+            this.loadMojangMappings({ versionId: this.versionId })
               .then(() => {
-                this.parsedData = parseMojang(this.serverMappings[versionId]);
+                this.parsedData = parseMojang(this.serverMappings[this.versionId]);
               })
               .catch(error => {
                 sendError("Error while loading mojang mappings: " + error);
@@ -77,7 +76,7 @@ export default {
 
     this.loadSpigotVersions()
       .then(() => {
-        this.loadSpigotMappings({ versionId: versionId }).catch(error => {
+        this.loadSpigotMappings({ versionId: this.versionId }).catch(error => {
           sendError("Error while loading spigot mappings: " + error);
         });
       })
@@ -99,6 +98,9 @@ export default {
               : this.parsedData.obfToMojang
           ).filter(k => k.toLowerCase().indexOf(this.filter.toLowerCase()) > -1)
         : [];
+    },
+    versionId() {
+      return this.$route.params.versionId;
     }
   },
   methods: {
