@@ -36,15 +36,13 @@ const parseMojang = input => {
             parts[1].indexOf("(") + 1,
             parts[1].indexOf(")")
           );
-          currMojang.members[mojangName] = {
-            type: "method",
+          currMojang.methods[mojangName] = {
             returnType: parts[0],
             mapped: mojangName,
             obf: parts[3],
             params: params
           };
-          currObf.members[parts[3]] = {
-            type: "method",
+          currObf.methods[parts[3]] = {
             returnType: parts[0],
             mapped: mojangName,
             obf: parts[3],
@@ -56,14 +54,12 @@ const parseMojang = input => {
       } else {
         parts = line.split(" ");
         if (parts && parts.length === 4) {
-          currMojang.members[parts[1]] = {
-            type: "field",
+          currMojang.fields[parts[1]] = {
             dataType: parts[0],
             mapped: parts[1],
             obf: parts[3]
           };
-          currObf.members[parts[3]] = {
-            type: "field",
+          currObf.fields[parts[3]] = {
             dataType: parts[0],
             mapped: parts[1],
             obf: parts[3]
@@ -86,12 +82,14 @@ const parseMojang = input => {
         currMojang = {
           mapped: parts[0],
           obf: parts[1].substring(0, parts[1].length - 1),
-          members: {}
+          fields: {},
+          methods: {}
         };
         currObf = {
           mapped: parts[0],
           obf: parts[1].substring(0, parts[1].length - 1),
-          members: {}
+          fields: {},
+          methods: {}
         };
       }
     }

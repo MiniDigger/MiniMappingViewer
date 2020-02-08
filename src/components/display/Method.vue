@@ -1,12 +1,17 @@
 <template>
   <span>
     <span v-if="toObf">
-      {{ data.returnType }} {{ data.mapped }}({{ data.params }}) ->
-      {{ data.obf }}
+      {{ mojangData.returnType }} {{ mojangData.mapped }}({{ mojangData.params }})
+      <span style="color: gray">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Obfuscated to {{ mojangData.obf }}
+      </span>
+      <span v-if="spigotData" style="color: red">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mapped to {{ spigotData.mapped }}
+      </span>
     </span>
     <span v-else>
-      {{ data.returnType }} {{ data.obf }}({{ data.params }}) ->
-      {{ data.mapped }}
+      {{ mojangData.returnType }} {{ mojangData.obf }}({{ mojangData.params }}) ->
+      {{ mojangData.mapped }}
     </span>
   </span>
 </template>
@@ -15,9 +20,13 @@
 export default {
   name: "Method",
   props: {
-    data: {
+    mojangData: {
       type: Object,
-      required: true
+      required: false
+    },
+    spigotData: {
+      type: Object,
+      required: false
     },
     toObf: {
       type: Boolean,

@@ -23,35 +23,23 @@
         </template>
       </q-input>
 
-      <div class="col-6" v-if="!client">
-        <h5 class="q-ma-sm">Mojang</h5>
-      </div>
-      <div class="col-6" v-if="!client">
-        <h5 class="q-ma-sm">Spigot</h5>
-      </div>
-
       <div class="col-12">
         <q-virtual-scroll
           ref="scroll"
           :items="mojangKeys"
-          :style="
-            'max-height: calc(100vh - ' + (client ? '120' : '168') + 'px)'
-          "
+          style="max-height: calc(100vh - 120px)"
           :virtual-scroll-slice-size="15"
           separator
         >
           <template v-slot="{ item, index }">
             <q-item :key="index">
-              <Member
-                :class="client ? 'col-12' : 'col-6'"
-                :data="getMojangItemData(item)"
-                :toObf="true"
-              />
-              <Member
-                v-if="!client"
-                class="col-6"
-                :data="getSpigotItemData(item)"
-                :toObf="true"
+              <Member v-if="client" class="col-12"
+                      :mojangData="getMojangItemData(item)"
+                      :toObf="true"/>
+              <Member v-else class="col-12"
+                      :mojangData="getMojangItemData(item)"
+                      :spigotData="getSpigotItemData(item)"
+                      :toObf="true"
               />
             </q-item>
           </template>
@@ -151,8 +139,9 @@ export default {
       if (mojangData) {
         let spigotData = this.spigotParsed.obfToMapped[mojangData.obf];
         if (spigotData) {
-          let result = this.spigotParsed.mappedToObf[spigotData.mapped];
-          return result ? result : {};
+          // let result = this.spigotParsed.mappedToObf[spigotData.mapped];
+          // return result ? result : {};
+          return spigotData;
         } else {
           return {};
         }
