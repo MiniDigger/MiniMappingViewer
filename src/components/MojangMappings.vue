@@ -48,6 +48,16 @@ import Member from "components/display/Member";
 export default {
   name: "MojangMappings",
   components: { Member },
+  props: {
+    versionId: {
+      type: String,
+      required: true
+    },
+    client: {
+      type: Boolean,
+      required: true
+    }
+  },
   data() {
     return {
       parsedData: null,
@@ -68,16 +78,18 @@ export default {
         });
     }
 
-    if (this.spigotVersions) {
-      this.loadSpigot();
-    } else {
-      this.loadSpigotVersions()
-        .then(() => {
-          this.loadSpigot();
-        })
-        .catch(error => {
-          sendError("Error while loading spigot versions: " + error);
-        });
+    if (!this.client) {
+      if (this.spigotVersions) {
+        this.loadSpigot();
+      } else {
+        this.loadSpigotVersions()
+          .then(() => {
+            this.loadSpigot();
+          })
+          .catch(error => {
+            sendError("Error while loading spigot versions: " + error);
+          });
+      }
     }
   },
   computed: {
@@ -96,9 +108,6 @@ export default {
               : this.parsedData.obfToMojang
           ).filter(k => k.toLowerCase().indexOf(this.filter.toLowerCase()) > -1)
         : [];
-    },
-    versionId() {
-      return this.$route.params.versionId;
     }
   },
   methods: {
@@ -127,9 +136,15 @@ export default {
         .then(() => {
           this.loadMojangMappings({ versionId: this.versionId })
             .then(() => {
-              this.parsedData = parseMojang(
-                this.serverMappings[this.versionId]
-              );
+              if (this.client) {
+                this.parsedData = parseMojang(
+                  this.clientMappings[this.versionId]
+                );
+              } else {
+                this.parsedData = parseMojang(
+                  this.serverMappings[this.versionId]
+                );
+              }
             })
             .catch(error => {
               sendError("Error while loading mojang mappings: " + error);

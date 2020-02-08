@@ -6,8 +6,12 @@ const routes = [
       { path: "", component: () => import("pages/Index.vue") },
       { path: "mojang", component: () => import("pages/MojangIndex.vue") },
       {
-        path: "mojang/:versionId",
-        component: () => import("pages/MojangMappings.vue")
+        path: "mojang/client/:versionId",
+        component: () => import("pages/MojangClient.vue")
+      },
+      {
+        path: "mojang/server/:versionId",
+        component: () => import("pages/MojangServer.vue")
       }
     ]
   }
