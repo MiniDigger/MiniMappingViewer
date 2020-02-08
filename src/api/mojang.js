@@ -39,14 +39,14 @@ const parseMojang = input => {
           currMojang.members[mojangName] = {
             type: "method",
             returnType: parts[0],
-            mojang: mojangName,
+            mapped: mojangName,
             obf: parts[3],
             params: params
           };
           currObf.members[parts[3]] = {
             type: "method",
             returnType: parts[0],
-            mojang: mojangName,
+            mapped: mojangName,
             obf: parts[3],
             params: params
           };
@@ -59,13 +59,13 @@ const parseMojang = input => {
           currMojang.members[parts[1]] = {
             type: "field",
             dataType: parts[0],
-            mojang: parts[1],
+            mapped: parts[1],
             obf: parts[3]
           };
           currObf.members[parts[3]] = {
             type: "field",
             dataType: parts[0],
-            mojang: parts[1],
+            mapped: parts[1],
             obf: parts[3]
           };
         } else {
@@ -75,7 +75,7 @@ const parseMojang = input => {
     } else {
       // class
       if (currMojang && currObf) {
-        mojangToObf[currMojang.mojang] = currMojang;
+        mojangToObf[currMojang.mapped] = currMojang;
         obfToMojang[currObf.obf] = currObf;
       }
 
@@ -84,12 +84,12 @@ const parseMojang = input => {
         sendError("Invalid class line: '" + line + "'");
       } else {
         currMojang = {
-          mojang: parts[0],
+          mapped: parts[0],
           obf: parts[1].substring(0, parts[1].length - 1),
           members: {}
         };
         currObf = {
-          mojang: parts[0],
+          mapped: parts[0],
           obf: parts[1].substring(0, parts[1].length - 1),
           members: {}
         };
@@ -98,8 +98,8 @@ const parseMojang = input => {
   });
 
   return {
-    mojangToObf: mojangToObf,
-    obfToMojang: obfToMojang
+    mappedToObf: mojangToObf,
+    obfToMapped: obfToMojang
   };
 };
 

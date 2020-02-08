@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div v-if="toObf">
+    <div v-if="toObf && data" style="overflow: auto">
       <q-item-section>
-        <q-item-label>{{ data.mojang }}</q-item-label>
+        <q-item-label>{{ data.mapped }} -> {{ data.obf }}</q-item-label>
       </q-item-section>
       <q-item-section v-if="fields.length > 0">
         Fields ({{ fields.length }}):
@@ -22,7 +22,7 @@
       </q-item-section>
     </div>
     <q-item-section v-else>
-      <q-item-label>{{ data.obf }}</q-item-label>
+      <q-item-label>{{ data }}</q-item-label>
     </q-item-section>
   </div>
 </template>
@@ -32,7 +32,7 @@ import Field from "components/display/Field";
 import Method from "components/display/Method";
 export default {
   name: "Member",
-  components: {Method, Field},
+  components: { Method, Field },
   props: {
     data: {
       type: Object,
@@ -45,12 +45,16 @@ export default {
   },
   computed: {
     fields() {
-      return Object.keys(this.data.members).filter(key => {
+      return Object.keys(
+        this.data && this.data.members ? this.data.members : {}
+      ).filter(key => {
         return this.data.members[key].type === "field";
       });
     },
     methods() {
-      return Object.keys(this.data.members).filter(key => {
+      return Object.keys(
+        this.data && this.data.members ? this.data.members : {}
+      ).filter(key => {
         return this.data.members[key].type === "method";
       });
     }

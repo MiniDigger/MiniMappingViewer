@@ -1,8 +1,11 @@
 <template>
-  <q-page style="max-height: calc(100vh - 50px)">
-    <div class="row" style="max-height: calc(100vh - 50px)">
-      <h3 class="col-8" style="margin: 10px 0 10px 0">
-        Displaying Mojang Mappings for {{ versionId }}
+  <q-page>
+    <div class="row">
+      <h3 v-if="client" class="col-8" style="margin: 10px 0 10px 0">
+        Client Mojang Mappings for {{ versionId }}
+      </h3>
+      <h3 v-if="!client" class="col-8" style="margin: 10px 0 10px 0">
+        Mojang -> Spigot for {{ versionId }}
       </h3>
       <q-input
         v-model="filter"
@@ -20,17 +23,36 @@
         </template>
       </q-input>
 
+      <div class="col-6" v-if="!client">
+        <h5 class="q-ma-sm">Mojang</h5>
+      </div>
+      <div class="col-6" v-if="!client">
+        <h5 class="q-ma-sm">Spigot</h5>
+      </div>
+
       <div class="col-12">
         <q-virtual-scroll
           ref="scroll"
-          :items="keys"
-          style="max-height: calc(100vh - 50px - 50px - 20px)"
+          :items="mojangKeys"
+          :style="
+            'max-height: calc(100vh - ' + (client ? '120' : '168') + 'px)'
+          "
           :virtual-scroll-slice-size="15"
           separator
         >
           <template v-slot="{ item, index }">
             <q-item :key="index">
-              <Member :data="getItemData(item)" :toObf="toObf" />
+              <Member
+                :class="client ? 'col-12' : 'col-6'"
+                :data="getMojangItemData(item)"
+                :toObf="true"
+              />
+              <Member
+                v-if="!client"
+                class="col-6"
+                :data="getSpigotItemData(item)"
+                :toObf="true"
+              />
             </q-item>
           </template>
         </q-virtual-scroll>
@@ -42,7 +64,8 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import { sendError } from "src/api/notify";
-import { parseMojang } from "src/api/mappings";
+import { parseMojang } from "src/api/mojang";
+import { parseSpigot } from "src/api/spigot";
 import Member from "components/display/Member";
 
 export default {
@@ -60,9 +83,9 @@ export default {
   },
   data() {
     return {
-      parsedData: null,
-      filter: "",
-      toObf: true
+      mojangParsed: null,
+      spigotParsed: null,
+      filter: ""
     };
   },
   mounted() {
@@ -98,15 +121,15 @@ export default {
       versions: state => state.mojang.versions,
       clientMappings: state => state.mojang.clientMappings,
       serverMappings: state => state.mojang.serverMappings,
-      spigotVersions: state => state.spigot.versions
+      spigotVersions: state => state.spigot.versions,
+      spigotClasses: state => state.spigot.classes,
+      spigotMembers: state => state.spigot.members
     }),
-    keys() {
-      return this.parsedData
-        ? Object.keys(
-            this.toObf
-              ? this.parsedData.mojangToObf
-              : this.parsedData.obfToMojang
-          ).filter(k => k.toLowerCase().indexOf(this.filter.toLowerCase()) > -1)
+    mojangKeys() {
+      return this.mojangParsed
+        ? Object.keys(this.mojangParsed.mappedToObf).filter(
+            k => k.toLowerCase().indexOf(this.filter.toLowerCase()) > -1
+          )
         : [];
     }
   },
@@ -119,10 +142,23 @@ export default {
       loadSpigotVersions: "spigot/loadVersions",
       loadSpigotMappings: "spigot/loadMappings"
     }),
-    getItemData(key) {
-      return this.toObf
-        ? this.parsedData.mojangToObf[key]
-        : this.parsedData.obfToMojang[key];
+    getMojangItemData(key) {
+      let result = this.mojangParsed.mappedToObf[key];
+      return result ? result : {};
+    },
+    getSpigotItemData(key) {
+      let mojangData = this.getMojangItemData(key);
+      if (mojangData) {
+        let spigotData = this.spigotParsed.obfToMapped[mojangData.obf];
+        if (spigotData) {
+          let result = this.spigotParsed.mappedToObf[spigotData.mapped];
+          return result ? result : {};
+        } else {
+          return {};
+        }
+      } else {
+        return {};
+      }
     },
     clear() {
       this.filter = "";
@@ -137,11 +173,11 @@ export default {
           this.loadMojangMappings({ versionId: this.versionId })
             .then(() => {
               if (this.client) {
-                this.parsedData = parseMojang(
+                this.mojangParsed = parseMojang(
                   this.clientMappings[this.versionId]
                 );
               } else {
-                this.parsedData = parseMojang(
+                this.mojangParsed = parseMojang(
                   this.serverMappings[this.versionId]
                 );
               }
@@ -155,9 +191,16 @@ export default {
         });
     },
     loadSpigot() {
-      this.loadSpigotMappings({ versionId: this.versionId }).catch(error => {
-        sendError("Error while loading spigot mappings: " + error);
-      });
+      this.loadSpigotMappings({ versionId: this.versionId })
+        .then(() => {
+          this.spigotParsed = parseSpigot(
+            this.spigotClasses[this.versionId],
+            this.spigotMembers[this.versionId]
+          );
+        })
+        .catch(error => {
+          sendError("Error while loading spigot mappings: " + error);
+        });
     }
   }
 };

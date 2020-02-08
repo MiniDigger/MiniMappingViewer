@@ -4,6 +4,13 @@
       <q-toolbar>
         <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
         <q-toolbar-title>Mini's Mapping Viewer</q-toolbar-title>
+        <q-btn
+          flat
+          round
+          dense
+          to="https://github.com/MiniDigger/MiniMappingViewer/"
+          >Github</q-btn
+        >
       </q-toolbar>
     </q-header>
 

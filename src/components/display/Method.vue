@@ -1,12 +1,12 @@
 <template>
   <span>
     <span v-if="toObf">
-      {{ data.returnType }} {{ data.mojang }}({{ data.params }}) ->
+      {{ data.returnType }} {{ data.mapped }}({{ data.params }}) ->
       {{ data.obf }}
     </span>
     <span v-else>
       {{ data.returnType }} {{ data.obf }}({{ data.params }}) ->
-      {{ data.mojang }}
+      {{ data.mapped }}
     </span>
   </span>
 </template>

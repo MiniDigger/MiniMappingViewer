@@ -36,41 +36,41 @@
 </template>
 
 <script>
-  import {mapState, mapActions} from "vuex";
-  import {sendError} from "src/api/notify";
+import { mapState, mapActions } from "vuex";
+import { sendError } from "src/api/notify";
 
-  export default {
-    name: "MojangMappings",
-    computed: {
-      ...mapState({
-        versionManifest: state => state.mojang.versionManifest
-      }),
-      versions() {
-        if (!this.versionManifest) return [];
-        let found114 = false;
-        return this.versionManifest.versions.filter(v => {
-          if (found114) {
-            return false;
-          } else {
-            if (v.id === "1.14.4") {
-              found114 = true;
-            }
-            return true;
+export default {
+  name: "MojangMappings",
+  computed: {
+    ...mapState({
+      versionManifest: state => state.mojang.versionManifest
+    }),
+    versions() {
+      if (!this.versionManifest) return [];
+      let found114 = false;
+      return this.versionManifest.versions.filter(v => {
+        if (found114) {
+          return false;
+        } else {
+          if (v.id === "1.14.4") {
+            found114 = true;
           }
-        });
-      }
-    },
-    methods: {
-      ...mapActions({
-        loadMojangVersions: "mojang/loadVersions"
-      })
-    },
-    mounted() {
-      if (this.versionManifest == null) {
-        this.loadMojangVersions().catch(error => {
-          sendError(error);
-        });
-      }
+          return true;
+        }
+      });
     }
-  };
+  },
+  methods: {
+    ...mapActions({
+      loadMojangVersions: "mojang/loadVersions"
+    })
+  },
+  mounted() {
+    if (this.versionManifest == null) {
+      this.loadMojangVersions().catch(error => {
+        sendError(error);
+      });
+    }
+  }
+};
 </script>

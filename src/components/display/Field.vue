@@ -1,9 +1,9 @@
 <template>
   <span>
     <span v-if="toObf"
-      >{{ data.dataType }} {{ data.mojang }} -> {{ data.obf }}</span
+      >{{ data.dataType }} {{ data.mapped }} -> {{ data.obf }}</span
     >
-    <span v-else>{{ data.dataType }} {{ data.obf }} -> {{ data.mojang }}</span>
+    <span v-else>{{ data.dataType }} {{ data.obf }} -> {{ data.mapped }}</span>
   </span>
 </template>
 
