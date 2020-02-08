@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@quasar/extras": "1.5.1",
-    "axios": "0.18.1",
+    "axios": "0.19.2",
     "quasar": "1.8.5"
   },
   "devDependencies": {
