@@ -17,6 +17,7 @@
         placeholder="Filter (Classes)"
         clearable
         dense
+        debounce="500"
         class="col-3 q-ma-sm"
         type="search"
       >
