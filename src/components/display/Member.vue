@@ -4,7 +4,7 @@
       <q-item-section>
         <q-item-label>
           {{ mojangData.mapped }} -> {{ mojangData.obf }}
-          <span v-if="spigotData.mapped" style="color: red">
+          <span v-if="spigotData && spigotData.mapped" style="color: red">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mapped to {{ spigotData.mapped }}
           </span>
         </q-item-label>
@@ -29,7 +29,7 @@
     <div v-else-if="toObf === false && mojangData" style="overflow: auto">
       <q-item-section>
         <q-item-label>
-          <span v-if="spigotData.mapped">{{ spigotData.mapped }}</span>
+          <span v-if="spigotData && spigotData.mapped">{{ spigotData.mapped }}</span>
           <span v-else>{{ mojangData.obf}}</span>
            -> <span style="color: red">{{ mojangData.obf}}</span>
           <span v-if="mojangData.mapped" style="color: grey">
@@ -42,6 +42,14 @@
         <ul class="q-ma-none">
           <li v-for="(key, idx) in fields" :key="idx">
             <Field :mojangData="mojangData.fields[key]" :spigotData="mojangMemberToSpigot(key, false)" :toObf="toObf" />
+          </li>
+        </ul>
+      </q-item-section>
+      <q-item-section v-if="methods.length > 0">
+        Methods ({{ methods.length }}):
+        <ul class="q-ma-none">
+          <li v-for="(key, idx) in methods" :key="idx">
+            <Method :mojangData="mojangData.methods[key]" :spigotData="mojangMemberToSpigot(key, true)" :toObf="toObf" />
           </li>
         </ul>
       </q-item-section>

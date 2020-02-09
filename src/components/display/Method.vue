@@ -10,8 +10,17 @@
       </span>
     </span>
     <span v-else>
-      {{ mojangData.returnType }} {{ mojangData.obf }}({{ mojangData.params }}) ->
-      {{ mojangData.mapped }}
+      {{ mojangData.returnType }}
+      <span v-if="spigotData && spigotData.mapped">
+        {{ spigotData.mapped }}({{ mojangData.params }})
+        <span style="color: gray">(obf {{ mojangData.obf }})</span>
+      </span>
+      <span v-else style="color: red">
+        {{ mojangData.obf }}<span style="color: black">({{ mojangData.params }})</span>
+      </span>
+      <span style="color: gray">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mapped to {{ mojangData.mapped }}
+      </span>
     </span>
   </span>
 </template>
