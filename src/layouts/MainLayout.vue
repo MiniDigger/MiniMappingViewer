@@ -33,7 +33,7 @@
             </q-item-section>
 
             <q-item-section>
-              Mojang
+              Mojang -> Spigot
             </q-item-section>
           </q-item>
           <q-item clickable v-ripple to="/spigot" aria-label="Spigot">
@@ -42,7 +42,7 @@
             </q-item-section>
 
             <q-item-section>
-              Spigot
+              Spigot -> Mojang
             </q-item-section>
           </q-item>
         </q-list>
