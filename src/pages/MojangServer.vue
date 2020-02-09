@@ -1,5 +1,5 @@
 <template>
-  <MojangMappings :version-id="version" :client="false" />
+  <MojangMappings :version-id="version" :client="false" :to-obf="true"/>
 </template>
 
 <script>

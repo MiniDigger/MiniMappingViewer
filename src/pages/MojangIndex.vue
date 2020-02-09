@@ -40,7 +40,7 @@ import { mapState, mapActions } from "vuex";
 import { sendError } from "src/api/notify";
 
 export default {
-  name: "MojangMappings",
+  name: "MojangIndex",
   computed: {
     ...mapState({
       versionManifest: state => state.mojang.versionManifest

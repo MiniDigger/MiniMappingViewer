@@ -1,14 +1,19 @@
 <template>
   <div>
-    <div v-if="toObf && mojangData" style="overflow: auto">
+    <div v-if="toObf === true && mojangData" style="overflow: auto">
       <q-item-section>
-        <q-item-label>{{ mojangData.mapped }} -> {{ mojangData.obf }}</q-item-label>
+        <q-item-label>
+          {{ mojangData.mapped }} -> {{ mojangData.obf }}
+          <span v-if="spigotData.mapped" style="color: red">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mapped to {{ spigotData.mapped }}
+          </span>
+        </q-item-label>
       </q-item-section>
       <q-item-section v-if="fields.length > 0">
         Fields ({{ fields.length }}):
         <ul class="q-ma-none">
           <li v-for="(key, idx) in fields" :key="idx">
-            <Field :mojangData="mojangData.fields[key]" :spigotData="getSpigotField(key)" :toObf="toObf" />
+            <Field :mojangData="mojangData.fields[key]" :spigotData="mojangMemberToSpigot(key, false)" :toObf="toObf" />
           </li>
         </ul>
       </q-item-section>
@@ -16,13 +21,33 @@
         Methods ({{ methods.length }}):
         <ul class="q-ma-none">
           <li v-for="(key, idx) in methods" :key="idx">
-            <Method :mojangData="mojangData.methods[key]" :spigotData="getSpigotMethod(key)" :toObf="toObf" />
+            <Method :mojangData="mojangData.methods[key]" :spigotData="mojangMemberToSpigot(key, true)" :toObf="toObf" />
+          </li>
+        </ul>
+      </q-item-section>
+    </div>
+    <div v-else-if="toObf === false && mojangData" style="overflow: auto">
+      <q-item-section>
+        <q-item-label>
+          <span v-if="spigotData.mapped">{{ spigotData.mapped }}</span>
+          <span v-else>{{ mojangData.obf}}</span>
+           -> <span style="color: red">{{ mojangData.obf}}</span>
+          <span v-if="mojangData.mapped" style="color: grey">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mapped to {{ mojangData.mapped }}
+          </span>
+        </q-item-label>
+      </q-item-section>
+      <q-item-section v-if="fields.length > 0">
+        Fields ({{ fields.length }}):
+        <ul class="q-ma-none">
+          <li v-for="(key, idx) in fields" :key="idx">
+            <Field :mojangData="mojangData.fields[key]" :spigotData="mojangMemberToSpigot(key, false)" :toObf="toObf" />
           </li>
         </ul>
       </q-item-section>
     </div>
     <q-item-section v-else>
-      <q-item-label>{{ mojangData }}</q-item-label>
+      <q-item-label>Loading... {{ mojangData }}</q-item-label>
     </q-item-section>
   </div>
 </template>
@@ -61,26 +86,13 @@ export default {
     }
   },
   methods: {
-    getSpigotField(key) {
-      if(!this.spigotData || !this.spigotData.fields) return null;
-      let mojang = this.mojangData.fields[key];
+    mojangMemberToSpigot(key, method) {
+      if(!this.spigotData) return null;
+      let members = method ? this.spigotData.methods : this.spigotData.fields;
+      if(!members) return null;
+      let mojang = method ? this.mojangData.methods[key] : this.mojangData.fields[key];
       if(mojang) {
-        let result = this.spigotData.fields[mojang.obf];
-        if(result instanceof Function) {
-          return  null;
-        } else {
-          return result;
-        }
-      } else {
-        console.log("meh " + key);
-        return null;
-      }
-    },
-    getSpigotMethod(key) {
-      if(!this.spigotData || !this.spigotData.methods) return null;
-      let mojang = this.mojangData.methods[key];
-      if(mojang) {
-        let result = this.spigotData.methods[mojang.obf];
+        let result = members[mojang.obf];
         if(result instanceof Function) {
           return  null;
         } else {

@@ -10,6 +10,7 @@ export const loadVersions = ({ commit }) => {
       .get(versionsGist)
       .then(response => {
         if (response && response.status === 200 && response.data) {
+          Object.keys(response.data).forEach(key => response.data[key].id = key);
           commit("setVersions", { data: response.data });
           resolve(response.data);
         } else {

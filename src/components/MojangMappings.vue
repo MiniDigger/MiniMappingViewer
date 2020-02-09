@@ -4,18 +4,20 @@
       <h3 v-if="client" class="col-8" style="margin: 10px 0 10px 0">
         Client Mojang Mappings for {{ versionId }}
       </h3>
-      <h3 v-if="!client" class="col-8" style="margin: 10px 0 10px 0">
+      <h3 v-if="!client && toObf" class="col-8" style="margin: 10px 0 10px 0">
         Mojang -> Spigot for {{ versionId }}
+      </h3>
+      <h3 v-if="!client && !toObf" class="col-8" style="margin: 10px 0 10px 0">
+        Spigot -> Mojang for {{ versionId }}
       </h3>
       <q-input
         v-model="filter"
         @input="input"
         @clear="clear"
         placeholder="Filter (Classes)"
-        borderless
         clearable
         dense
-        class="col-4"
+        class="col-3 q-ma-sm"
         type="search"
       >
         <template v-slot:append>
@@ -35,11 +37,11 @@
             <q-item :key="index">
               <Member v-if="client" class="col-12"
                       :mojangData="getMojangItemData(item)"
-                      :toObf="true"/>
+                      :toObf="toObf"/>
               <Member v-else class="col-12"
                       :mojangData="getMojangItemData(item)"
                       :spigotData="getSpigotItemData(item)"
-                      :toObf="true"
+                      :toObf="toObf"
               />
             </q-item>
           </template>
@@ -65,6 +67,10 @@ export default {
       required: true
     },
     client: {
+      type: Boolean,
+      required: true
+    },
+    toObf: {
       type: Boolean,
       required: true
     }
@@ -114,11 +120,30 @@ export default {
       spigotMembers: state => state.spigot.members
     }),
     mojangKeys() {
-      return this.mojangParsed
-        ? Object.keys(this.mojangParsed.mappedToObf).filter(
-            k => k.toLowerCase().indexOf(this.filter.toLowerCase()) > -1
-          )
-        : [];
+      if(this.mojangParsed) {
+        let data = this.mojangParsed.mappedToObf;
+        return Object.keys(data).filter(
+          k => {
+            if(k.toLowerCase().indexOf(this.filter.toLowerCase()) > -1) {
+              // searched for mojang name
+              return true;
+            } else if(data[k].obf.toLowerCase().indexOf(this.filter.toLowerCase()) > -1) {
+              // searched for obf name
+              return true;
+            } else {
+              // try spigot
+              let spigotData = this.getSpigotItemData(k);
+              if (spigotData && spigotData.mapped) {
+                return spigotData.mapped.toLowerCase().indexOf(this.filter.toLowerCase()) > -1
+              } else {
+                return false;
+              }
+            }
+          }
+        )
+      } else {
+        return [];
+      }
     }
   },
   methods: {
@@ -136,6 +161,7 @@ export default {
     },
     getSpigotItemData(key) {
       let mojangData = this.getMojangItemData(key);
+      if(!this.spigotParsed) return {};
       if (mojangData) {
         let spigotData = this.spigotParsed.obfToMapped[mojangData.obf];
         if (spigotData) {

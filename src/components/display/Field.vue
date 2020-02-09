@@ -9,7 +9,18 @@
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mapped to {{ spigotData.mapped }}
       </span>
     </span>
-    <span v-else>{{ mojangData.dataType }} {{ mojangData.obf }} -> {{ mojangData.mapped }}</span>
+    <span v-else>
+      {{ mojangData.dataType }}
+      <span v-if="spigotData && spigotData.mapped">
+        {{ spigotData.mapped }} ({{ mojangData.obf }})
+      </span>
+      <span v-else style="color: red">
+        {{ mojangData.obf }}
+      </span>
+      <span style="color: gray">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mapped to {{ mojangData.mapped }}
+      </span>
+    </span>
   </span>
 </template>
 

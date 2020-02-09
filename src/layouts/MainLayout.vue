@@ -36,6 +36,15 @@
               Mojang
             </q-item-section>
           </q-item>
+          <q-item clickable v-ripple to="/spigot">
+            <q-item-section avatar>
+              <q-icon name="play_arrow" />
+            </q-item-section>
+
+            <q-item-section>
+              Spigot
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
     </q-drawer>

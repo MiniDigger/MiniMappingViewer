@@ -12,6 +12,11 @@ const routes = [
       {
         path: "mojang/server/:versionId",
         component: () => import("pages/MojangServer.vue")
+      },
+      { path: "spigot", component: () => import("pages/SpigotIndex.vue") },
+      {
+        path: "spigot/server/:versionId",
+        component: () => import("pages/SpigotServer.vue")
       }
     ]
   }

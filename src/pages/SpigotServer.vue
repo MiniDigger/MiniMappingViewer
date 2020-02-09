@@ -1,11 +1,11 @@
 <template>
-  <MojangMappings :version-id="version" :client="true" :to-obf="true"/>
+  <MojangMappings :version-id="version" :client="false" :to-obf="false"/>
 </template>
 
 <script>
 import MojangMappings from "components/MojangMappings";
 export default {
-  name: "MojangClient",
+  name: "SpigotServer",
   components: { MojangMappings },
   computed: {
     version() {
