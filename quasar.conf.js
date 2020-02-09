@@ -10,7 +10,7 @@ module.exports = function(ctx) {
     css: ["app.scss"],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
-    extras: ["roboto-font", "material-icons"],
+    extras: [],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
