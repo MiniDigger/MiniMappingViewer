@@ -8,7 +8,7 @@
           flat
           round
           dense
-          to="https://github.com/MiniDigger/MiniMappingViewer/"
+          @click="openUrl('https://github.com/MiniDigger/MiniMappingViewer/')"
           >Github</q-btn
         >
       </q-toolbar>
@@ -56,13 +56,21 @@
 </template>
 
 <script>
-export default {
+  import { openURL } from 'quasar'
+
+
+  export default {
   name: "MainLayout",
   data() {
     return {
       drawer: false,
       miniState: true
     };
+  },
+  methods: {
+    openUrl(url) {
+      openURL(url);
+    }
   }
 };
 </script>
