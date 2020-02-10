@@ -97,6 +97,7 @@
 <script>
   import Field from "components/display/Field";
   import Method from "components/display/Method";
+  import {isPrimitive} from "src/api/spigot";
 
   export default {
     name: "Member",
@@ -138,9 +139,9 @@
           let candidates = Object.keys(members).filter(key => key.startsWith(mojang.obf));
           if (candidates && candidates.length > 0) {
             // fix shit
-            if(!mojang.params) mojang.params = "";
+            if (!mojang.params) mojang.params = "";
             candidates.forEach(key => {
-              if(!members[key].params) {
+              if (!members[key].params) {
                 members[key].params = "";
               }
             });
@@ -151,12 +152,46 @@
 
             if (candidates && candidates.length > 0) {
               if (candidates.length === 1) {
-                if(mojangParamCount !== 0) members[candidates[0]].warning = "maybe wrong";
-                return members[candidates[0]]; // todo this is wrong, might have wrong params
+                // found one with same param count
+                let hit = members[candidates[0]];
+                if(hit.returnType === mojang.returnType) {
+                  // found one with same param count and return type
+                  return hit; // woo a proper hit!
+                } else {
+                  // found one with same param count but different return time
+                  if(isPrimitive(mojang.returnType)) {
+                    return null; // we didnt find anything
+                  } else {
+                    if (mojangParamCount !== 0) {
+                      hit = Object.assign({}, hit);
+                      hit.warning = "maybe wrong, return dont match";
+                    }
+                    return hit; // todo this is wrong, check if return types match
+                  }
+                }
               } else {
-                // console.log("found too many..." + key);
-                members[candidates[1]].warning = "most likely wrong";
-                return members[candidates[1]]; // TODO this is wrong, we need to find the right one, based on params
+                // found multiple with same param count
+                let newCandidates = candidates.filter(key => members[key].returnType === mojang.returnType);
+                if (newCandidates && newCandidates.length > 0) {
+                  if(newCandidates.length === 1) {
+                    // found one with same return type and same param count
+                    return members[newCandidates[0]];// woo a proper hit!
+                  } else {
+                    // found multiple with same return type and same param count
+                    let hit = Object.assign({}, members[candidates[1]]);
+                    hit.warning = "maybe wrong, multiple candidates";
+                    return hit; // TODO this is wrong, we need to find the right one, based on params
+                  }
+                } else {
+                  // found multiple with same param count but none with same return type
+                  if(isPrimitive(mojang.returnType)) {
+                    return null; // we didnt find anything
+                  } else {
+                    let hit = Object.assign({}, members[candidates[1]]);
+                    hit.warning = "maybe wrong, multiple candidates, no return type match";
+                    return hit; // TODO this is wrong, we need to find the right one, based on params
+                  }
+                }
               }
             } else {
               // console.log("found nothing1! " + key);

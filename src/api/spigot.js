@@ -1,4 +1,5 @@
 import {sendError} from "src/api/notify";
+import de from "quasar/lang/de";
 
 const parseSpigot = (classes, members) => {
   let spigotToObf = {};
@@ -78,8 +79,7 @@ const parseSpigot = (classes, members) => {
               returnType: returnType,
               mapped: parts[3],
               obf: parts[1],
-              params: params,
-              debug: parts[2].substring(parts[2].indexOf("(") + 1, parts[2].indexOf(")"))
+              params: params
             };
           } else {
             sendError("error: didnt find (sm): " + parts[0]);
@@ -91,8 +91,7 @@ const parseSpigot = (classes, members) => {
               returnType: returnType,
               mapped: parts[3],
               obf: parts[1],
-              params: params,
-              debug: parts[2].substring(parts[2].indexOf("(") + 1, parts[2].indexOf(")"))
+              params: params
             };
           } else {
             sendError("error: didnt find (om): " + spigotToObf[parts[0]].obf);
@@ -167,4 +166,21 @@ const parseType = (type) => {
   return type;
 };
 
-export {parseSpigot};
+const isPrimitive = (type) => {
+  switch (type) {
+    case "byte":
+    case "char":
+    case "short":
+    case "int":
+    case "long":
+    case "float":
+    case "double":
+    case "boolean":
+    case "void":
+      return true;
+    default:
+      return false;
+  }
+};
+
+export { parseSpigot, isPrimitive };

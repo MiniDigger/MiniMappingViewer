@@ -12,7 +12,7 @@
       </div>
       <div class="col-3" v-if="spigotData" style="color: red">
         {{ spigotData.mapped }}({{ spigotData.params }})
-        <span v-if="spigotData.warning">
+        <span v-if="spigotData.warning" style="color: grey">
           {{spigotData.warning}}
         </span>
       </div>
@@ -27,7 +27,7 @@
       <div class="col-3" v-if="spigotData && spigotData.mapped">
         {{ spigotData.mapped }}({{ spigotData.params }})
         <span style="color: gray">(obf {{ mojangData.obf }})</span>
-        <span v-if="spigotData.warning">
+        <span v-if="spigotData.warning" style="color: grey">
           {{spigotData.warning}}
         </span>
       </div>
