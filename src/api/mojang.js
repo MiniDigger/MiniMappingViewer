@@ -1,4 +1,4 @@
-import { sendError } from "src/api/notify";
+import {sendError} from "src/api/notify";
 
 const parseMojang = input => {
   let mojangToObf = {};
@@ -37,16 +37,16 @@ const parseMojang = input => {
             parts[1].indexOf(")")
           );
           currMojang.methods[mojangName] = {
-            returnType: parts[0],
+            returnType: handleType(parts[0]),
             mapped: mojangName,
             obf: parts[3],
-            params: params
+            params: handleParams(params)
           };
           currObf.methods[parts[3]] = {
-            returnType: parts[0],
+            returnType: handleType(parts[0]),
             mapped: mojangName,
             obf: parts[3],
-            params: params
+            params: handleParams(params)
           };
         } else {
           sendError("Invalid member line (m): '" + line + "'");
@@ -55,12 +55,12 @@ const parseMojang = input => {
         parts = line.split(" ");
         if (parts && parts.length === 4) {
           currMojang.fields[parts[1]] = {
-            dataType: parts[0],
+            dataType: handleType(parts[0]),
             mapped: parts[1],
             obf: parts[3]
           };
           currObf.fields[parts[3]] = {
-            dataType: parts[0],
+            dataType: handleType(parts[0]),
             mapped: parts[1],
             obf: parts[3]
           };
@@ -101,4 +101,26 @@ const parseMojang = input => {
   };
 };
 
-export { parseMojang };
+const handleType = (type) => {
+  if (type.indexOf(".") !== -1) {
+    let parts = type.split(".");
+    for (let i = 0; i < parts.length - 1; i++) {
+      parts[i] = parts[i].substring(0, 1);
+    }
+    return parts.join(".");
+  }
+  return type;
+};
+
+const handleParams = (param) => {
+  if (param.indexOf(",") !== -1) {
+    let params = param.split(",");
+    for (let i = 0; i < params.length; i++) {
+      params[i] = handleType(params[i]);
+    }
+    return params.join(",")
+  }
+  return handleType(param);
+};
+
+export {parseMojang};

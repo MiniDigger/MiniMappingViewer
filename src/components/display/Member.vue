@@ -154,12 +154,12 @@
               if (candidates.length === 1) {
                 // found one with same param count
                 let hit = members[candidates[0]];
-                if(hit.returnType === mojang.returnType) {
+                if (hit.returnType === mojang.returnType) {
                   // found one with same param count and return type
                   return hit; // woo a proper hit!
                 } else {
                   // found one with same param count but different return time
-                  if(isPrimitive(mojang.returnType)) {
+                  if (isPrimitive(mojang.returnType)) {
                     return null; // we didnt find anything
                   } else {
                     if (mojangParamCount !== 0) {
@@ -173,7 +173,7 @@
                 // found multiple with same param count
                 let newCandidates = candidates.filter(key => members[key].returnType === mojang.returnType);
                 if (newCandidates && newCandidates.length > 0) {
-                  if(newCandidates.length === 1) {
+                  if (newCandidates.length === 1) {
                     // found one with same return type and same param count
                     return members[newCandidates[0]];// woo a proper hit!
                   } else {
@@ -184,7 +184,7 @@
                   }
                 } else {
                   // found multiple with same param count but none with same return type
-                  if(isPrimitive(mojang.returnType)) {
+                  if (isPrimitive(mojang.returnType)) {
                     return null; // we didnt find anything
                   } else {
                     let hit = Object.assign({}, members[candidates[1]]);
