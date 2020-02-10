@@ -1,4 +1,4 @@
-import { sendError } from "src/api/notify";
+import {sendError} from "src/api/notify";
 
 const parseSpigot = (classes, members) => {
   let spigotToObf = {};
@@ -66,15 +66,20 @@ const parseSpigot = (classes, members) => {
         if (parts && parts.length === 4) {
           currSpigot = spigotToObf[parts[0]];
 
-          let returnType = "";
-          let params = "";
+          let returnType = parseType(parts[2].substring(parts[2].indexOf(")") + 1));
+          let params = parts[2].substring(parts[2].indexOf("(") + 1, parts[2].indexOf(")"));
+          params = params.substring(0, params.length - 1).split(";").filter(p => p !== "").map(p => parseType(p + ";")).join(",");
+          if(params === undefined) {
+            params = "";
+          }
 
           if (currSpigot) {
             currSpigot.methods[parts[3]] = {
               returnType: returnType,
               mapped: parts[3],
               obf: parts[1],
-              params: params
+              params: params,
+              debug: parts[2].substring(parts[2].indexOf("(") + 1, parts[2].indexOf(")"))
             };
           } else {
             sendError("error: didnt find (sm): " + parts[0]);
@@ -82,14 +87,15 @@ const parseSpigot = (classes, members) => {
 
           currObf = obfToSpigot[spigotToObf[parts[0]].obf];
           if (currObf) {
-            currObf.methods[parts[1]] = {
+            currObf.methods[parts[1] + "("+ params +")"] = {
               returnType: returnType,
               mapped: parts[3],
               obf: parts[1],
-              params: params
+              params: params,
+              debug: parts[2].substring(parts[2].indexOf("(") + 1, parts[2].indexOf(")"))
             };
           } else {
-            sendError("error: didnt find (om): " +spigotToObf[parts[0]].obf);
+            sendError("error: didnt find (om): " + spigotToObf[parts[0]].obf);
           }
         } else {
           sendError("Invalid line (f): " + parts);
@@ -100,7 +106,7 @@ const parseSpigot = (classes, members) => {
           currSpigot = spigotToObf[parts[0]];
 
           if (currSpigot) {
-            currSpigot.methods[parts[2]] = {
+            currSpigot.fields[parts[2]] = {
               dataType: "",
               mapped: parts[2],
               obf: parts[1]
@@ -111,13 +117,13 @@ const parseSpigot = (classes, members) => {
 
           currObf = obfToSpigot[spigotToObf[parts[0]].obf];
           if (currObf) {
-              currObf.fields[parts[1]] = {
-                dataType: "",
-                mapped: parts[2],
-                obf: parts[1]
-              };
+            currObf.fields[parts[1]] = {
+              dataType: "",
+              mapped: parts[2],
+              obf: parts[1]
+            };
           } else {
-            sendError("error: didnt find (om): " +spigotToObf[parts[0]].obf);
+            sendError("error: didnt find (om): " + spigotToObf[parts[0]].obf);
           }
         } else {
           sendError("Invalid line (f): " + parts);
@@ -132,4 +138,33 @@ const parseSpigot = (classes, members) => {
   };
 };
 
-export { parseSpigot };
+const parseType = (type) => {
+  switch (type) {
+    case "B":
+      return "byte";
+    case "C":
+      return "char";
+    case "S":
+      return "short";
+    case "I":
+      return "int";
+    case "J":
+      return "long";
+    case "F":
+      return "float";
+    case "D":
+      return "double";
+    case "Z":
+      return "boolean";
+    case "V":
+      return "void";
+  }
+
+  if (type.startsWith("L")) {
+    return type.substring(1, type.length - 1).replace("/", ".");
+  }
+
+  return type;
+};
+
+export {parseSpigot};

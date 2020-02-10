@@ -11,16 +11,25 @@
         {{ mojangData.obf }}({{ mojangData.params }})
       </div>
       <div class="col-3" v-if="spigotData" style="color: red">
-        {{ spigotData.mapped }}({{ mojangData.params }})
+        {{ spigotData.mapped }}({{ spigotData.params }})
+        <span v-if="spigotData.warning">
+          {{spigotData.warning}}
+        </span>
       </div>
     </template>
     <template v-else>
-      <div class="col-3">
-        {{ mojangData.returnType }}
+      <div class="col-3" v-if="spigotData && spigotData.returnType">
+        {{ spigotData.returnType }}
+      </div>
+      <div class="col-3" v-else>
+        {{ mojangData.returnType }} (mojang)
       </div>
       <div class="col-3" v-if="spigotData && spigotData.mapped">
-        {{ spigotData.mapped }}({{ mojangData.params }})
+        {{ spigotData.mapped }}({{ spigotData.params }})
         <span style="color: gray">(obf {{ mojangData.obf }})</span>
+        <span v-if="spigotData.warning">
+          {{spigotData.warning}}
+        </span>
       </div>
       <div class="col-3" v-else style="color: gray">
         {{ mojangData.obf }}<span style="color: black">({{ mojangData.params }})</span>

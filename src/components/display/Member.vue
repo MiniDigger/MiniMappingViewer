@@ -4,7 +4,7 @@
       <q-item-section>
         <q-item-label class="text-subtitle1" style="background-color: #d3d3d370">
           <div class="row">
-            <div class="col-1">Class: </div>
+            <div class="col-1">Class:</div>
             <div class="col-11 row">
               <div class="offset-3 col-3">{{ mojangData.mapped }}</div>
               <div class="col-3" style="color: grey">{{ mojangData.obf }}</div>
@@ -49,7 +49,7 @@
       <q-item-section>
         <q-item-label class="text-subtitle1" style="background-color: #d3d3d370">
           <div class="row">
-            <div class="col-1">Class: </div>
+            <div class="col-1">Class:</div>
             <div class="col-11 row">
               <div class="col-3" v-if="spigotData && spigotData.mapped">{{ spigotData.mapped }}</div>
               <div class="col-3" v-else>{{ mojangData.obf}}</div>
@@ -135,14 +135,39 @@
         if (!members) return null;
         let mojang = method ? this.mojangData.methods[key] : this.mojangData.fields[key];
         if (mojang) {
-          let result = members[mojang.obf];
-          if (result instanceof Function) {
-            return null;
+          let candidates = Object.keys(members).filter(key => key.startsWith(mojang.obf));
+          if (candidates && candidates.length > 0) {
+            // fix shit
+            if(!mojang.params) mojang.params = "";
+            candidates.forEach(key => {
+              if(!members[key].params) {
+                members[key].params = "";
+              }
+            });
+            // get mojang param count
+            let mojangParamCount = mojang.params.split(",").length === 1 ? (mojang.params.length > 0 ? 1 : 0) : mojang.params.split(",").length;
+            // find who matches that count
+            candidates = candidates.filter(key => mojangParamCount === (members[key].params.split(",").length === 1 ? (members[key].params.length > 0 ? 1 : 0) : members[key].params.split(",").length));
+
+            if (candidates && candidates.length > 0) {
+              if (candidates.length === 1) {
+                if(mojangParamCount !== 0) members[candidates[0]].warning = "maybe wrong";
+                return members[candidates[0]]; // todo this is wrong, might have wrong params
+              } else {
+                // console.log("found too many..." + key);
+                members[candidates[1]].warning = "most likely wrong";
+                return members[candidates[1]]; // TODO this is wrong, we need to find the right one, based on params
+              }
+            } else {
+              // console.log("found nothing1! " + key);
+              return null;
+            }
           } else {
-            return result;
+            // console.log("found nothing2! " + key);
+            return null;
           }
         } else {
-          console.log("meh " + key);
+          // console.log("meh " + key);
           return null;
         }
       }
