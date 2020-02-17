@@ -17,7 +17,7 @@
     "quasar": "1.9.1"
   },
   "devDependencies": {
-    "@quasar/app": "1.5.5",
+    "@quasar/app": "1.5.8",
     "@vue/eslint-config-prettier": "6.0.0",
     "babel-eslint": "10.0.3",
     "eslint": "6.8.0",
