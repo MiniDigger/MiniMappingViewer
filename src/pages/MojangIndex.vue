@@ -1,6 +1,10 @@
 <template>
   <q-page>
-    <h1 class="q-ma-sm">Mojang Mappings</h1>
+    <h1 class="q-ma-sm">
+      Mojang Mappings
+    </h1>
+
+    <q-select outlined v-model="selectionMode" :options="selectionOptions" label="Filter" multiple />
 
     <div class="row">
       <div class="col-6">
@@ -41,6 +45,13 @@ import { sendError } from "src/api/notify";
 
 export default {
   name: "MojangIndex",
+  data() {
+    return {
+      // there is also "old_beta", "old_alpha" but we dont care about those
+      selectionOptions: ["release", "snapshot"],
+      selectionMode: ["release", "snapshot"]
+    }
+  },
   computed: {
     ...mapState({
       versionManifest: state => state.mojang.versionManifest
@@ -49,6 +60,9 @@ export default {
       if (!this.versionManifest) return [];
       let found114 = false;
       return this.versionManifest.versions.filter(v => {
+        if (!this.selectionMode.includes(v.type)) {
+          return false;
+        }
         if (found114) {
           return false;
         } else {
