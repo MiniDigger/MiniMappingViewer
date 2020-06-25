@@ -46,6 +46,18 @@ const parseSpigot = (classes, members) => {
     methods: {},
     fields: {}
   };
+  spigotToObf["net.minecraft.server.Main"] = {
+    mapped: "net.minecraft.server.Main",
+    obf: "net.minecraft.server.Main",
+    methods: {},
+    fields: {}
+  };
+  obfToSpigot["net.minecraft.server.Main"] = {
+    mapped: "net.minecraft.server.Main",
+    obf: "net.minecraft.server.Main",
+    methods: {},
+    fields: {}
+  };
 
   let currSpigot = null;
   let currObf = null;
