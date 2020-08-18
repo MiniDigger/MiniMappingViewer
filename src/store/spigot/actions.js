@@ -2,7 +2,7 @@ import axios from "axios";
 
 const corsanywhere = "https://corsanywhere.minidigger.me/";
 const versionsGist =
-  "https://gist.githubusercontent.com/MiniDigger/6c483628f4745b1b326862acb89a82d2/raw/69792f62c217fa472c84ee59bff142639e0463f4/builddata.json";
+  "https://gist.githubusercontent.com/MiniDigger/6c483628f4745b1b326862acb89a82d2/raw/428ce97b9bb339a7b1153efd4716450c0a1c97e7/builddata.json";
 
 export const loadVersions = ({ commit }) => {
   return new Promise((resolve, reject) => {
