@@ -1,5 +1,5 @@
 <template>
-  <MojangMappings :version-id="version" :client="false" :to-obf="true"/>
+  <MojangMappings :version-id="version" :client="false" :to-obf="true" :query="query"/>
 </template>
 
 <script>
@@ -10,6 +10,9 @@ export default {
   computed: {
     version() {
       return this.$route.params.versionId;
+    },
+    query() {
+      return this.$route.params.query;
     }
   }
 };

@@ -7,18 +7,18 @@ const routes = [
       { name: "MojangIndex", path: "mojang", component: () => import("pages/MojangIndex.vue") },
       {
         name: "MojangClient",
-        path: "mojang/client/:versionId",
+        path: "mojang/client/:versionId/:query?",
         component: () => import("pages/MojangClient.vue")
       },
       {
         name: "MojangServer",
-        path: "mojang/server/:versionId",
+        path: "mojang/server/:versionId/:query?",
         component: () => import("pages/MojangServer.vue")
       },
       { name: "SpigotIndex", path: "spigot", component: () => import("pages/SpigotIndex.vue") },
       {
         name: "SpigotServer",
-        path: "spigot/server/:versionId",
+        path: "spigot/server/:versionId/:query?",
         component: () => import("pages/SpigotServer.vue")
       }
     ]

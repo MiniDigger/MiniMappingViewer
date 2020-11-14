@@ -74,16 +74,27 @@ export default {
     toObf: {
       type: Boolean,
       required: true
+    },
+    query: {
+      type: String,
+      default: ""
     }
   },
   data() {
     return {
       mojangParsed: null,
       spigotParsed: null,
-      filter: ""
+      filter: "",
+      url: ""
     };
   },
   mounted() {
+    this.url = this.$route.fullPath.replace(this.query, "");
+    if (!this.url.endsWith("/")) {
+      this.url = this.url + "/";
+    }
+    this.filter = this.query.replace("/", "");
+    console.log("opened with " + this.filter)
     if (this.versionManifest) {
       this.loadMojang();
     } else {
@@ -123,6 +134,7 @@ export default {
     mojangKeys() {
       if(this.mojangParsed) {
         let data = this.mojangParsed.mappedToObf;
+        history.replaceState(undefined, undefined, "#" + this.url + this.filter.replace("/", ""))
         return Object.keys(data).filter(
           k => {
             if(k.toLowerCase().indexOf(this.filter.toLowerCase()) > -1) {
