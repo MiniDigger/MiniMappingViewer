@@ -23,7 +23,6 @@
       :width="200"
       :breakpoint="500"
       bordered
-      content-class="bg-grey-3"
     >
       <q-scroll-area class="fit">
         <q-list padding>
@@ -43,6 +42,19 @@
 
             <q-item-section>
               Spigot -> Mojang
+            </q-item-section>
+          </q-item>
+          <q-item clickable v-ripple aria-label="Toggle Dark Mode" @click="toggleDark">
+            <q-item-section avatar>
+              <q-icon name="brightness_5" v-if="darkMode"/>
+              <q-icon name="brightness_2" v-else />
+            </q-item-section>
+
+            <q-item-section v-if="darkMode">
+              Light Mode
+            </q-item-section>
+            <q-item-section v-else>
+              Dark Mode
             </q-item-section>
           </q-item>
         </q-list>
@@ -67,9 +79,17 @@
       miniState: true
     };
   },
+  computed: {
+    darkMode() {
+      return this.$q.dark.isActive;
+    }
+  },
   methods: {
     openUrl(url) {
       openURL(url);
+    },
+    toggleDark() {
+      this.$q.dark.toggle();
     }
   }
 };

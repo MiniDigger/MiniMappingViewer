@@ -2,7 +2,7 @@
   <div>
     <div v-if="toObf === true && mojangData" style="overflow: auto">
       <q-item-section>
-        <q-item-label class="text-subtitle1" style="background-color: #d3d3d370">
+        <q-item-label class="text-subtitle1 line-bg-color">
           <div class="row">
             <div class="col-1">Class:</div>
             <div class="col-11 row">
@@ -47,7 +47,7 @@
 
     <div v-else-if="toObf === false && mojangData" style="overflow: auto">
       <q-item-section>
-        <q-item-label class="text-subtitle1" style="background-color: #d3d3d370">
+        <q-item-label class="text-subtitle1 line-bg-color">
           <div class="row">
             <div class="col-1">Class:</div>
             <div class="col-11 row">
@@ -213,5 +213,19 @@
 <style scoped lang="scss">
   .col-11.offset-1.row:nth-child(even) {
     background-color: #d3d3d370;
+  }
+
+  .line-bg-color {
+    background-color: #d3d3d370
+  }
+
+  .body--dark {
+    .col-11.offset-1.row:nth-child(even) {
+      background-color: #44434370;
+    }
+
+    .line-bg-color {
+      background-color: #44434370
+    }
   }
 </style>

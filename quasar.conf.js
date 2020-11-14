@@ -22,7 +22,11 @@ module.exports = function(ctx) {
       directives: [],
 
       // Quasar plugins
-      plugins: ["Notify", "Dialog"]
+      plugins: ["Notify", "Dialog"],
+
+      config: {
+        dark: 'auto'
+      }
     },
 
     supportIE: false,

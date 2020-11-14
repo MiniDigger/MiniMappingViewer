@@ -32,10 +32,10 @@
         </span>
       </div>
       <div class="col-3" v-else style="color: gray">
-        {{ mojangData.obf }}<span style="color: black">({{ mojangData.params }})</span>
+        {{ mojangData.obf }}<span class="arg-color">({{ mojangData.params }})</span>
       </div>
       <div class="col-3" style="color: red">
-       {{ mojangData.mapped }}<span style="color: black">({{ mojangData.params }})</span>
+       {{ mojangData.mapped }}<span class="arg-color">({{ mojangData.params }})</span>
       </div>
     </template>
   </div>
@@ -61,8 +61,18 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .col-3 {
     overflow-wrap: break-word;
+  }
+
+  .arg-color {
+    color: black;
+  }
+
+  .body--dark {
+    .arg-color {
+      color: #cacaca;
+    }
   }
 </style>
