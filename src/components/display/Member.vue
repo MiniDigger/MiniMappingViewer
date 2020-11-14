@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div v-if="toObf === true && mojangData" style="overflow: auto">
+    <div v-if="toObf === true && mojangData" style="overflow: auto; overflow-wrap: break-word;">
       <q-item-section>
-        <q-item-label class="text-subtitle1 line-bg-color">
-          <div class="row">
+        <q-item-label class="text-subtitle1 line-bg-color row">
+          <div class="row col-12" style="align-self: center">
             <div class="col-1">Class:</div>
             <div class="col-11 row">
               <div class="offset-3 col-3">{{ mojangData.mapped }}</div>
