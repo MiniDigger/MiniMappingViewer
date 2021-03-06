@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>me.minidigger.mappingviewer</groupId>
+    <artifactId>minimappingviewer</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+    <name>MiniMappingViewer</name>
+    <description>Second iteration of my minecraft mapping viewer</description>
+
+    <properties>
+        <java.version>15</java.version>
+        <spring-boot-admin.version>2.3.1</spring-boot-admin.version>
+    </properties>
+
+    <dependencies>
+        <!-- cadix -->
+        <dependency>
+            <groupId>org.cadixdev</groupId>
+            <artifactId>lorenz</artifactId>
+            <version>0.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cadixdev</groupId>
+            <artifactId>lorenz-io-proguard</artifactId>
+            <version>0.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cadixdev</groupId>
+            <artifactId>lorenz-asm</artifactId>
+            <version>0.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cadixdev</groupId>
+            <artifactId>atlas</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.fabricmc</groupId>
+            <artifactId>lorenz-tiny</artifactId>
+            <version>2.0.0+build.3</version>
+        </dependency>
+        <dependency>
+            <groupId>net.fabricmc</groupId>
+            <artifactId>tiny-mappings-parser</artifactId>
+            <version>0.3.0+build.17</version>
+        </dependency>
+
+        <!-- google -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.0-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
+        </dependency>
+
+        <!-- spring -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-server</artifactId>
+        </dependency>
+
+        <!-- test etc -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>fabric</id>
+            <url>https://maven.fabricmc.net/</url>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-dependencies</artifactId>
+                <version>${spring-boot-admin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <groupId>org.apache.maven.plugins</groupId>
+            <configuration>
+              <source>15</source>
+              <target>15</target>
+            </configuration>
+          </plugin>
+        </plugins>
+    </build>
+
+</project>
