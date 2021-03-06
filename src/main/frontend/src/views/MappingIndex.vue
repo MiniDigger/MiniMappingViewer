@@ -7,9 +7,7 @@
         </v-card-title>
         <v-card-text>
           <VersionList v-if="versions" :versions="versions"/>
-          <template v-else>
-            Loading...
-          </template>
+          <Loader v-else />
         </v-card-text>
       </v-card>
     </v-col>
@@ -19,10 +17,11 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import VersionList from "@/components/VersionList";
+import Loader from "@/components/Loader";
 
 export default {
   name: "MappingIndex",
-  components: { VersionList },
+  components: {Loader, VersionList },
   computed: {
     ...mapGetters('versions', ['getVersions']),
     mappingType() {

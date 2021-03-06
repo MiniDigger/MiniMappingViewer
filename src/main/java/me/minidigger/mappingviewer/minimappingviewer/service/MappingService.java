@@ -14,6 +14,7 @@ import org.cadixdev.lorenz.merge.MergeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -21,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -48,6 +50,7 @@ public class MappingService {
         this.yarnService = yarnService;
     }
 
+    @Cacheable("mojang")
     public List<String> readMojang(String version, boolean server) {
         Path mappingFolder = FileUtil.getMappingFolder(version, server);
         if (mappingFolder == null) {
@@ -101,6 +104,7 @@ public class MappingService {
         }
     }
 
+    @Cacheable("spigot")
     public List<String> readSpigot(String version) {
         Path mappingFolder = FileUtil.getMappingFolder(version, true);
         if (mappingFolder == null) {
@@ -160,6 +164,7 @@ public class MappingService {
         }
     }
 
+    @Cacheable("yarn")
     public List<String> readYarn(String version) {
         Path mappingFolder = FileUtil.getMappingFolder(version, true);
         if (mappingFolder == null) {
@@ -216,11 +221,13 @@ public class MappingService {
                 log.warn("vanilla server jar didn't exist yet, downloading");
                 mojangService.downloadServerJar(version, vanillaJar);
             }
-            Path tempFile = Files.createTempFile("paperweight", "jar");
+            Path tempFile = Files.createTempFile("minimappingviewer-inheritance-fix", "jar");
             atlas.install((ctx) -> new JarEntryRemappingTransformer(new LorenzRemapper(mappings, ctx.inheritanceProvider())));
             atlas.run(vanillaJar, tempFile);
         } catch (IOException ex) {
             log.warn("Error while running atlas", ex);
+        } catch (FileSystemAlreadyExistsException ex) {
+            log.warn("Error while running atlas, FileSystemAlreadyExistsException: {}", ex.getMessage());
         }
     }
 }

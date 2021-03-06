@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
-import me.minidigger.mappingviewer.minimappingviewer.MiniMappingViewerApplication;
+import me.minidigger.mappingviewer.minimappingviewer.config.CacheConfig;
 
 @Service
 public class YarnService {
@@ -43,7 +41,7 @@ public class YarnService {
 
     private final LoadingCache<String, Map<String, List<Integer>>> versionManifest = CacheBuilder.newBuilder()
             .maximumSize(1)
-            .expireAfterWrite(MiniMappingViewerApplication.CACHE_TIME)
+            .expireAfterWrite(CacheConfig.CACHE_TIME)
             .build(new CacheLoader<>() {
                 @Override
                 public Map<String, List<Integer>> load(String dummy) {
@@ -64,7 +62,7 @@ public class YarnService {
             });
 
     private final LoadingCache<String, Optional<String>> versions = CacheBuilder.newBuilder()
-            .maximumSize(100).expireAfterWrite(MiniMappingViewerApplication.CACHE_TIME).build(new CacheLoader<>() {
+            .maximumSize(100).expireAfterWrite(CacheConfig.CACHE_TIME).build(new CacheLoader<>() {
                 @Override
                 public Optional<String> load(String version) {
                     List<Integer> builds = versionManifest.getUnchecked("dummy").get(version);

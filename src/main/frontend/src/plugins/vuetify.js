@@ -9,15 +9,20 @@ export default new Vuetify({
     themes: {
       light: {
         primary: colors.amber.darken1,
-        secondary: colors.amber.lighten4,
-        accent: colors.indigo.base, // #3F51B5
+        secondary: colors.amber.lighten3,
+        accent: colors.indigo.base,
       },
+      dark: {
+        primary: colors.amber.darken3,
+        secondary: colors.amber.darken1,
+        accent: colors.indigo.base,
+      }
     },
-    options: {
-      themeCache: {
-        get: key => localStorage.getItem(key),
-        set: (key, value) => localStorage.setItem(key, value),
-      },
-    }
+    // options: {
+    //   themeCache: {
+    //     get: key => localStorage.getItem(key),
+    //     set: (key, value) => localStorage.setItem(key, value),
+    //   },
+    // }
   },
 })

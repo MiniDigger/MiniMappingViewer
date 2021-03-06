@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
-import me.minidigger.mappingviewer.minimappingviewer.MiniMappingViewerApplication;
+import me.minidigger.mappingviewer.minimappingviewer.config.CacheConfig;
 import me.minidigger.mappingviewer.minimappingviewer.model.spigot.Info;
 import me.minidigger.mappingviewer.minimappingviewer.model.spigot.Version;
 
@@ -31,7 +31,7 @@ public class SpigotService {
     private final RestTemplate jsonRest;
 
     private LoadingCache<String, Optional<String>> refs = CacheBuilder.newBuilder()
-            .maximumSize(100).expireAfterWrite(MiniMappingViewerApplication.CACHE_TIME).build(new CacheLoader<>() {
+            .maximumSize(100).expireAfterWrite(CacheConfig.CACHE_TIME).build(new CacheLoader<>() {
                 @Override
                 public Optional<String> load(String version) {
                     ResponseEntity<Version> versionEntity = rest.getForEntity(VERSIONS_URL + version + ".json", Version.class);
@@ -45,7 +45,7 @@ public class SpigotService {
             });
 
     private LoadingCache<String, Optional<Info>> infos = CacheBuilder.newBuilder()
-            .maximumSize(100).expireAfterWrite(MiniMappingViewerApplication.CACHE_TIME).build(new CacheLoader<>() {
+            .maximumSize(100).expireAfterWrite(CacheConfig.CACHE_TIME).build(new CacheLoader<>() {
                 @Override
                 public Optional<Info> load(String version) {
                     Optional<String> ref = refs.getUnchecked(version);
@@ -65,7 +65,7 @@ public class SpigotService {
             });
 
     private LoadingCache<String, Optional<String>> members = CacheBuilder.newBuilder()
-            .maximumSize(100).expireAfterWrite(MiniMappingViewerApplication.CACHE_TIME).build(new CacheLoader<>() {
+            .maximumSize(100).expireAfterWrite(CacheConfig.CACHE_TIME).build(new CacheLoader<>() {
                 @Override
                 public Optional<String> load(String version) {
                     Optional<String> ref = refs.getUnchecked(version);
@@ -90,7 +90,7 @@ public class SpigotService {
             });
 
     private LoadingCache<String, Optional<String>> classes = CacheBuilder.newBuilder()
-            .maximumSize(100).expireAfterWrite(MiniMappingViewerApplication.CACHE_TIME).build(new CacheLoader<>() {
+            .maximumSize(100).expireAfterWrite(CacheConfig.CACHE_TIME).build(new CacheLoader<>() {
                 @Override
                 public Optional<String> load(String version) {
                     Optional<String> ref = refs.getUnchecked(version);

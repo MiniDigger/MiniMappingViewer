@@ -15,13 +15,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import me.minidigger.mappingviewer.minimappingviewer.MiniMappingViewerApplication;
+import me.minidigger.mappingviewer.minimappingviewer.config.CacheConfig;
 import me.minidigger.mappingviewer.minimappingviewer.model.mojang.Version;
 import me.minidigger.mappingviewer.minimappingviewer.model.mojang.VersionManifest;
 
@@ -36,7 +33,7 @@ public class MojangService {
 
     private final LoadingCache<String, Optional<VersionManifest>> versionManifest = CacheBuilder.newBuilder()
             .maximumSize(1)
-            .expireAfterWrite(MiniMappingViewerApplication.CACHE_TIME)
+            .expireAfterWrite(CacheConfig.CACHE_TIME)
             .build(new CacheLoader<>() {
                 @Override
                 public Optional<VersionManifest> load(String dummy) {
@@ -53,7 +50,7 @@ public class MojangService {
 
     private final LoadingCache<String, Optional<Version>> versions = CacheBuilder.newBuilder()
             .maximumSize(100)
-            .expireAfterWrite(MiniMappingViewerApplication.CACHE_TIME).build(new CacheLoader<>() {
+            .expireAfterWrite(CacheConfig.CACHE_TIME).build(new CacheLoader<>() {
                 @Override
                 public Optional<Version> load(String id) {
                     Optional<VersionManifest> manifestOptional = versionManifest.getUnchecked("dum");
@@ -78,7 +75,7 @@ public class MojangService {
             });
     private final LoadingCache<String, Optional<String>> clientMappings = CacheBuilder.newBuilder()
             .maximumSize(100)
-            .expireAfterWrite(MiniMappingViewerApplication.CACHE_TIME).build(new CacheLoader<>() {
+            .expireAfterWrite(CacheConfig.CACHE_TIME).build(new CacheLoader<>() {
                 @Override
                 public Optional<String> load(String id) {
                     Optional<Version> version = versions.getUnchecked(id);
@@ -104,7 +101,7 @@ public class MojangService {
 
     private final LoadingCache<String, Optional<String>> serverMappings = CacheBuilder.newBuilder()
             .maximumSize(100)
-            .expireAfterWrite(MiniMappingViewerApplication.CACHE_TIME).build(new CacheLoader<>() {
+            .expireAfterWrite(CacheConfig.CACHE_TIME).build(new CacheLoader<>() {
                 @Override
                 public Optional<String> load(String id) {
                     Optional<Version> version = versions.getUnchecked(id);
@@ -130,7 +127,7 @@ public class MojangService {
 
     private final LoadingCache<String, Optional<String>> vanillaServerJar = CacheBuilder.newBuilder()
             .maximumSize(100)
-            .expireAfterWrite(MiniMappingViewerApplication.CACHE_TIME).build(new CacheLoader<>() {
+            .expireAfterWrite(CacheConfig.CACHE_TIME).build(new CacheLoader<>() {
                 @Override
                 public Optional<String> load(String id) {
                     Optional<Version> version = versions.getUnchecked(id);
