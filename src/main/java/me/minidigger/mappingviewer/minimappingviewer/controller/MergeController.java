@@ -25,20 +25,11 @@ public class MergeController {
     }
 
     @ResponseBody
-    @GetMapping(value = "/{version}/server/{type1}/{type2}", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String serverMerge(@PathVariable String version,
+    @GetMapping(value = "/{version}/{type1}/{type2}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String merge(@PathVariable String version,
                               @PathVariable MappingProvider type1,
                               @PathVariable MappingProvider type2,
                               @RequestParam(value = "delimiter", defaultValue = "NEWLINE") Delimiter delimiter) {
-        return String.join(delimiter.getDelimiter(), service.merge(version, type1, type2, true));
-    }
-
-    @ResponseBody
-    @GetMapping(value = "/{version}/client/{type1}/{type2}", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String clientMerge(@PathVariable String version,
-                              @PathVariable MappingProvider type1,
-                              @PathVariable MappingProvider type2,
-                              @RequestParam(value = "delimiter", defaultValue = "NEWLINE") Delimiter delimiter) {
-        return String.join(delimiter.getDelimiter(), service.merge(version, type1, type2, false));
+        return String.join(delimiter.getDelimiter(), service.merge(version, type1, type2));
     }
 }

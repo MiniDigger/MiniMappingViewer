@@ -21,8 +21,8 @@ public class MergingService {
 
     private static final Logger log = LoggerFactory.getLogger(MergingService.class);
 
-    public List<String> merge(String version, MappingProvider type1, MappingProvider type2, boolean server) {
-        Path mappingFolder = FileUtil.getMappingFolder(version, server);
+    public List<String> merge(String version, MappingProvider type1, MappingProvider type2) {
+        Path mappingFolder = FileUtil.getMappingFolder(version);
         if (mappingFolder == null) {
             return Collections.emptyList();
         }

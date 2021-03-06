@@ -9,8 +9,10 @@ import org.cadixdev.lorenz.MappingSet;
 import org.cadixdev.lorenz.asm.LorenzRemapper;
 import org.cadixdev.lorenz.io.MappingFormats;
 import org.cadixdev.lorenz.io.MappingsReader;
+import org.cadixdev.lorenz.merge.FieldMergeStrategy;
 import org.cadixdev.lorenz.merge.MappingSetMerger;
 import org.cadixdev.lorenz.merge.MergeConfig;
+import org.cadixdev.lorenz.merge.MethodMergeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,14 +53,14 @@ public class MappingService {
     }
 
     @Cacheable("mojang")
-    public List<String> readMojang(String version, boolean server) {
-        Path mappingFolder = FileUtil.getMappingFolder(version, server);
+    public List<String> readMojang(String version) {
+        Path mappingFolder = FileUtil.getMappingFolder(version);
         if (mappingFolder == null) {
             return Collections.emptyList();
         }
         Path path = mappingFolder.resolve("notchToMojang.tsrg");
         if (!Files.exists(path) || forceRefresh) {
-            if (!createMojang(version, server)) {
+            if (!createMojang(version)) {
                 return Collections.emptyList();
             }
         }
@@ -69,26 +71,26 @@ public class MappingService {
         }
     }
 
-    public boolean createMojang(String version, boolean server) {
-        Optional<String> mappings;
-        if (server) {
-            mappings = mojangService.getServerMappings(version);
-        } else {
-            mappings = mojangService.getClientMappings(version);
-        }
+    public boolean createMojang(String version) {
+        Optional<String> serverMappings = mojangService.getServerMappings(version);
+        Optional<String> clientMappings = mojangService.getClientMappings(version);
 
-        if (mappings.isEmpty()) {
+        if (serverMappings.isEmpty() || clientMappings.isEmpty()) {
             log.warn("No mojang mappings found for {}", version);
             return false;
         }
 
-        try (MappingsReader reader = MappingFormats.byId("proguard").createReader(new ByteArrayInputStream(mappings.get().getBytes(StandardCharsets.UTF_8)))) {
-            Path mappingFolder = FileUtil.getMappingFolder(version, server);
+        try (MappingsReader serverReader = MappingFormats.byId("proguard").createReader(new ByteArrayInputStream(serverMappings.get().getBytes(StandardCharsets.UTF_8)));
+             MappingsReader clientReader = MappingFormats.byId("proguard").createReader(new ByteArrayInputStream(clientMappings.get().getBytes(StandardCharsets.UTF_8)))) {
+            Path mappingFolder = FileUtil.getMappingFolder(version);
             if (mappingFolder == null) {
                 return false;
             }
 
-            MappingSet mojangToNotch = reader.read();
+            MappingSet mojangToNotchServer = serverReader.read();
+            MappingSet mojangToNotchClient = clientReader.read();
+
+            MappingSet mojangToNotch = MappingSetMerger.create(mojangToNotchClient, mojangToNotchServer).merge();
 
 //            inheritanceFix(mappingFolder, version, mojangToNotch);
 
@@ -106,7 +108,7 @@ public class MappingService {
 
     @Cacheable("spigot")
     public List<String> readSpigot(String version) {
-        Path mappingFolder = FileUtil.getMappingFolder(version, true);
+        Path mappingFolder = FileUtil.getMappingFolder(version);
         if (mappingFolder == null) {
             return Collections.emptyList();
         }
@@ -137,7 +139,7 @@ public class MappingService {
             MappingSet mergedSet = MappingSetMerger.create(classReader.read(), memberReader.read()).merge();
 
             // spigot isn't complete, so we need to fill it
-            Path mappingFolder = FileUtil.getMappingFolder(version, true);
+            Path mappingFolder = FileUtil.getMappingFolder(version);
             if (mappingFolder == null) {
                 return false;
             }
@@ -145,7 +147,7 @@ public class MappingService {
             Path file = mappingFolder.resolve("notchToMojang.tsrg");
             if (!Files.exists(file)) {
                 log.warn("MojMap didn't exist get, creating");
-                readMojang(version, true);
+                readMojang(version);
             }
             MappingSet notchToMojang = MappingFormats.TSRG.read(file);
             MappingSet notchToSpigot = MappingSetMerger.create(mergedSet, notchToMojang, MergeConfig.builder().withMergeHandler(new SpigotPackageMergerHandler()).build()).merge();
@@ -166,7 +168,7 @@ public class MappingService {
 
     @Cacheable("yarn")
     public List<String> readYarn(String version) {
-        Path mappingFolder = FileUtil.getMappingFolder(version, true);
+        Path mappingFolder = FileUtil.getMappingFolder(version);
         if (mappingFolder == null) {
             return Collections.emptyList();
         }
@@ -192,7 +194,7 @@ public class MappingService {
 
         try (BufferedReader reader = new BufferedReader(new StringReader(mappings.get()));
              TinyMappingsReader tinyMappingsReader = new TinyMappingsReader(TinyMappingFactory.loadWithDetection(reader), "official", "named")){
-            Path mappingFolder = FileUtil.getMappingFolder(version, true);
+            Path mappingFolder = FileUtil.getMappingFolder(version);
             if (mappingFolder == null) {
                 return false;
             }

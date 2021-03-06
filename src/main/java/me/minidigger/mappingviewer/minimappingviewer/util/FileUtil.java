@@ -12,17 +12,13 @@ public class FileUtil {
     private static final Logger log = LoggerFactory.getLogger(FileUtil.class);
     private static final Path cacheFolder = Path.of("");
 
-    public static Path getMappingFolder(String version, boolean server) {
+    public static Path getMappingFolder(String version) {
         try {
             Path versionFolder = cacheFolder.resolve(version);
             if (!Files.isDirectory(versionFolder)) {
                 Files.createDirectory(versionFolder);
             }
-            Path mappingFolder = versionFolder.resolve(server ? "server" : "client");
-            if (!Files.isDirectory(mappingFolder)) {
-                Files.createDirectory(mappingFolder);
-            }
-            return mappingFolder;
+            return versionFolder;
         } catch (IOException ex) {
             log.warn("Error while preparing mapping folder", ex);
             return null;

@@ -24,17 +24,10 @@ public class MappingController {
     }
 
     @ResponseBody
-    @GetMapping(value = "/MOJANG/{version}/client", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String getMojangClientMappings(@PathVariable String version,
+    @GetMapping(value = "/MOJANG/{version}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String getMojangMappings(@PathVariable String version,
                                           @RequestParam(value = "delimiter", defaultValue = "NEWLINE") Delimiter delimiter) {
-        return String.join(delimiter.getDelimiter(), service.readMojang(version, false));
-    }
-
-    @ResponseBody
-    @GetMapping(value = "/MOJANG/{version}/server", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String getMojangServerMappings(@PathVariable String version,
-                                          @RequestParam(value = "delimiter", defaultValue = "NEWLINE") Delimiter delimiter) {
-        return String.join(delimiter.getDelimiter(), service.readMojang(version, true));
+        return String.join(delimiter.getDelimiter(), service.readMojang(version));
     }
 
     @ResponseBody
