@@ -11,65 +11,71 @@ const routes = [
     meta: {
       icon: "mdi-home",
     },
-  },
-  {
-    path: "/spigot",
-    name: "Spigot",
-    component: () => import(/* webpackChunkName: "index" */ "../views/MappingIndex.vue"),
-    meta: {
-      icon: "mdi-home",
-      mappingType: "SPIGOT"
-    },
-  },
-  {
-    path: "/spigot/:version",
-    name: "SpigotView",
-    component: () => import(/* webpackChunkName: "view" */ "../views/MappingView.vue"),
-    meta: {
-      icon: "mdi-home",
-      hide: true,
-      mappingType: "SPIGOT"
-    },
-  },
-  {
-    path: "/mojang",
-    name: "Mojang",
-    component: () => import(/* webpackChunkName: "index" */ "../views/MappingIndex.vue"),
-    meta: {
-      icon: "mdi-home",
-      mappingType: "MOJANG"
-    },
-  },
-  {
-    path: "/mojang/:version",
-    name: "MojangView",
-    component: () => import(/* webpackChunkName: "view" */ "../views/MappingView.vue"),
-    meta: {
-      icon: "mdi-home",
-      hide: true,
-      mappingType: "MOJANG"
-    },
-  },
-  {
-    path: "/yarn",
-    name: "Yarn",
-    component: () => import(/* webpackChunkName: "index" */ "../views/MappingIndex.vue"),
-    meta: {
-      icon: "mdi-home",
-      mappingType: "YARN"
-    },
-  },
-  {
-    path: "/yarn/:version",
-    name: "YarnView",
-    component: () => import(/* webpackChunkName: "view" */ "../views/MappingView.vue"),
-    meta: {
-      icon: "mdi-home",
-      hide: true,
-      mappingType: "YARN"
-    },
-  },
+  }
 ];
+
+const types = [
+  {name: "Spigot", type: "SPIGOT", path: "spigot"},
+  {name: "Mojang", type: "MOJANG", path: "mojang"},
+  {name: "Yarn", type: "YARN", path: "yarn"},
+];
+
+types.forEach(type => {
+  addIndexAndVersion(type.name, type.type, type.path);
+  types.filter(t => t.name !== type.name).forEach(inner => {
+    addMerge(type, inner);
+  });
+});
+
+function addMerge(left, right) {
+  routes.push({
+    path: "/" + left.path + "-" + right.path,
+    name: left.name + " -> " + right.name,
+    component: () => import(/* webpackChunkName: "index" */ "../views/MappingIndex.vue"),
+    meta: {
+      icon: "mdi-home",
+      merge: true,
+      leftType: left.type,
+      rightType: right.type,
+      mappingType: left.type + "-" + right.type
+    }
+  });
+  routes.push({
+    path: "/" + left.path + "-" + right.path + "/:version",
+    name: left.name + " -> " + right.name + "!",
+    component: () => import(/* webpackChunkName: "view" */ "../views/MappingView.vue"),
+    meta: {
+      icon: "mdi-home",
+      hide: true,
+      merge: true,
+      leftType: left.type,
+      rightType: right.type,
+      mappingType: left.type + "-" + right.type
+    },
+  });
+}
+
+function addIndexAndVersion(name, type, path) {
+  routes.push({
+    path: "/" + path,
+    name: name,
+    component: () => import(/* webpackChunkName: "index" */ "../views/MappingIndex.vue"),
+    meta: {
+      icon: "mdi-home",
+      mappingType: type
+    }
+  });
+  routes.push({
+    path: "/" + path + "/:version",
+    name: name + "!",
+    component: () => import(/* webpackChunkName: "view" */ "../views/MappingView.vue"),
+    meta: {
+      icon: "mdi-home",
+      hide: true,
+      mappingType: type
+    },
+  });
+}
 
 const router = new VueRouter({
   routes

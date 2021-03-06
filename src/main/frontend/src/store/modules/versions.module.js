@@ -18,7 +18,8 @@ const actions = {
       const response = await getVersionsFor(version);
       commit('SET_VERSIONS_FOR', {version, data: response.data });
     } catch (error) {
-      // handle the error here
+      // todo handle the error here
+      console.log(error);
     }
   }
 }

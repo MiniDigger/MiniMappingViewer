@@ -1,9 +1,9 @@
 <template>
   <v-row>
-    <v-col cols="12" md="6" offset="3">
+    <v-col cols="12" lg="6" offset-lg="3">
       <v-card class="ma-4">
         <v-card-title>
-          <h1>Versions for Mapping Provider {{ mappingType }}</h1>
+          <h1>Versions for {{ title }}</h1>
         </v-card-title>
         <v-card-text>
           <VersionList v-if="versions" :versions="versions"/>
@@ -24,11 +24,28 @@ export default {
   components: {Loader, VersionList },
   computed: {
     ...mapGetters('versions', ['getVersions']),
-    mappingType() {
-      return this.$route.meta.mappingType;
+    title() {
+      return this.$route.name
     },
     versions() {
-      return this.getVersions[this.mappingType];
+      if (this.$route.meta.merge) {
+        const left = this.getVersions[this.$route.meta.leftType];
+        const right = this.getVersions[this.$route.meta.rightType];
+        if (!left || !right) {
+          return null;
+        }
+        const combined = [];
+        left.forEach(l => {
+          right.forEach(r => {
+            if (l.id === r.id) {
+              combined.push(l);
+            }
+          })
+        });
+        return combined;
+      } else {
+        return this.getVersions[this.$route.meta.mappingType];
+      }
     }
   },
   methods: {
@@ -36,7 +53,12 @@ export default {
   },
   async mounted() {
     if (!this.versions) {
-      await this.getVersionsFor(this.mappingType);
+      if (this.$route.meta.merge) {
+        await this.getVersionsFor(this.$route.meta.leftType);
+        await this.getVersionsFor(this.$route.meta.rightType);
+      } else {
+        await this.getVersionsFor(this.$route.meta.mappingType);
+      }
     }
   }
 };

@@ -12,7 +12,7 @@
         </v-list-item>
       </v-list>
     </v-col>
-    <v-col v-if="hasSnapshots" cols="12" :md="6">
+    <v-col v-if="hasSnapshots" cols="12" md="6">
       <v-list dense>
         <v-list-item v-for="v in secondList" :key="v.id" :to="$route.path + '/' + v.id">
           <v-chip

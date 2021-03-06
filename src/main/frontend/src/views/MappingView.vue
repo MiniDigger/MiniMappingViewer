@@ -1,9 +1,9 @@
 <template>
   <v-row>
-    <v-col cols="12" md="6" offset="3">
+    <v-col cols="12">
       <v-card class="ma-4">
         <v-card-title>
-          <h1>Mapping View for {{ mappingType }} on {{ version }}</h1>
+          <h1>Mapping View for {{ title }} on {{ version }}</h1>
         </v-card-title>
         <v-card-text>
 
@@ -43,14 +43,19 @@ export default {
   components: {Loader, Class},
   computed: {
     ...mapGetters('mappings', ['getMappings']),
-    mappingType() {
-      return this.$route.meta.mappingType;
+    ...mapGetters('merge', ['getMergedMappings']),
+    title() {
+      return this.$route.name.slice(0, -1);
     },
     version() {
       return this.$route.params.version;
     },
     mappings() {
-      return this.getMappings[this.mappingType + "-" + this.version];
+      if (this.$route.meta.merge) {
+        return this.getMergedMappings[this.$route.meta.leftType + "-" + this.$route.meta.rightType + "-" + this.version];
+      } else {
+        return this.getMappings[this.$route.meta.mappingType + "-" + this.version];
+      }
     },
     classes() {
       if (!this.mappings) return [];
@@ -76,11 +81,16 @@ export default {
     }
   },
   methods: {
-    ...mapActions('mappings', ['getMappingsFor'])
+    ...mapActions('mappings', ['getMappingsFor']),
+    ...mapActions('merge', ['getMergedMappingsFor'])
   },
   async mounted() {
     if (!this.mappings) {
-      await this.getMappingsFor({provider: this.mappingType, version: this.version});
+      if (this.$route.meta.merge) {
+        await this.getMergedMappingsFor({leftType: this.$route.meta.leftType, rightType: this.$route.meta.rightType, version: this.version});
+      } else {
+        await this.getMappingsFor({provider: this.$route.meta.mappingType, version: this.version});
+      }
     }
   }
 };

@@ -18,7 +18,8 @@ const actions = {
       const response = await getMappingsFor(provider, version);
       commit('SET_MAPPINGS_FOR', {provider, version, data: response.data });
     } catch (error) {
-      // handle the error here
+      // todo handle the error here
+      console.log(error);
     }
   }
 }
