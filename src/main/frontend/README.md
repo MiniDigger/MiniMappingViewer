@@ -1,4 +1,4 @@
-# minimappingviewer
+# frontend
 
 ## Project setup
 ```
