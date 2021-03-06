@@ -15,7 +15,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import me.minidigger.mappingviewer.minimappingviewer.MiniMappingViewerApplication;
 import me.minidigger.mappingviewer.minimappingviewer.model.mojang.Version;
@@ -148,6 +152,18 @@ public class MojangService {
     @Autowired
     public MojangService(RestTemplate rest) {
         this.rest = rest;
+    }
+
+    public Stream<VersionManifest.Version> getVersions() {
+        return versionManifest.getUnchecked("dum")
+          .map(value -> value.getVersions().stream().filter(this::supportsMappings))
+          .orElseGet(Stream::empty);
+    }
+
+    private boolean supportsMappings(VersionManifest.Version version) {
+        return ((version.getId().startsWith("1.1") && version.getId().compareTo("1.15") >= 0) ||
+               (version.getId().contains("w") && version.getId().compareTo("19w36a") >= 0) ||
+               version.getId().equals("1.14.4")) && !version.getId().startsWith("3D Shareware");
     }
 
     public Optional<String> getServerMappings(String version) {

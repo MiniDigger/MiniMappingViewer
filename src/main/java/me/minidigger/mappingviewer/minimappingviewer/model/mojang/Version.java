@@ -6,17 +6,38 @@ import java.util.StringJoiner;
 public class Version {
 
     private final Downloads downloads;
+    private final String id;
+    private final String type;
+    private final String releaseTime;
 
     public Version() {
         downloads = null;
+        id = null;
+        type = null;
+        releaseTime = null;
     }
 
-    public Version(Downloads downloads) {
+    public Version(Downloads downloads, String id, String type, String releaseTime) {
         this.downloads = downloads;
+        this.id = id;
+        this.type = type;
+        this.releaseTime = releaseTime;
     }
 
     public Downloads getDownloads() {
         return downloads;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getReleaseTime() {
+      return releaseTime;
     }
 
     @Override
@@ -24,19 +45,21 @@ public class Version {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Version version = (Version) o;
-        return Objects.equals(downloads, version.downloads);
+        return Objects.equals(downloads, version.downloads) && Objects.equals(id, version.id) && Objects.equals(type, version.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(downloads);
+        return Objects.hash(downloads, id, type);
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", Version.class.getSimpleName() + "[", "]")
-                .add("downloads=" + downloads)
-                .toString();
+            .add("downloads=" + downloads)
+            .add("id='" + id + "'")
+            .add("type='" + type + "'")
+            .toString();
     }
 
     public static class Downloads {

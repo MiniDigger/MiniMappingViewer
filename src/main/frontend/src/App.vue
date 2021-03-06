@@ -49,7 +49,7 @@
     </v-navigation-drawer>
 
     <v-main>
-      <RouterView/>
+      <RouterView :key="$route.fullPath"/>
     </v-main>
   </v-app>
 </template>

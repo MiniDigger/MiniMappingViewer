@@ -14,7 +14,7 @@ import me.minidigger.mappingviewer.minimappingviewer.model.MappingProvider;
 import me.minidigger.mappingviewer.minimappingviewer.service.MergingService;
 
 @Controller
-@RequestMapping("/api/mappings/merged")
+@RequestMapping("/api/merge/")
 public class MergeController {
 
     private final MergingService service;

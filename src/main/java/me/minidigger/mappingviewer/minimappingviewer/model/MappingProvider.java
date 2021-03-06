@@ -2,18 +2,20 @@ package me.minidigger.mappingviewer.minimappingviewer.model;
 
 public enum MappingProvider {
 
-    MOJANG("mojang", "Mojang"),
-    NOTCH("notch", "Notch"),
-    SPIGOT("spigot", "Spigot"),
-    YARN("yarn", "Yarn"),
+    MOJANG("mojang", "Mojang", true),
+    NOTCH("notch", "Notch", true),
+    SPIGOT("spigot", "Spigot", false),
+    YARN("yarn", "Yarn", true),
     ;
 
     private final String first;
     private final String second;
+    private final boolean snapshots;
 
-    MappingProvider(String first, String second) {
+    MappingProvider(String first, String second, boolean snapshots) {
         this.first = first;
         this.second = second;
+        this.snapshots = snapshots;
     }
 
     public String getFirst() {
@@ -22,5 +24,9 @@ public enum MappingProvider {
 
     public String getSecond() {
         return second;
+    }
+
+    public boolean supportsSnapshots() {
+        return snapshots;
     }
 }
