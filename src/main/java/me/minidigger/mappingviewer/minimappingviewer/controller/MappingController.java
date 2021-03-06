@@ -6,8 +6,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import me.minidigger.mappingviewer.minimappingviewer.model.Delimiter;
 import me.minidigger.mappingviewer.minimappingviewer.service.MappingService;
 
 @Controller
@@ -23,25 +25,29 @@ public class MappingController {
 
     @ResponseBody
     @GetMapping(value = "/mojang/{version}/client", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String getMojangClientMappings(@PathVariable String version) {
-        return String.join("\n", service.readMojang(version, false));
+    public String getMojangClientMappings(@PathVariable String version,
+                                          @RequestParam(value = "delimiter", defaultValue = "NEWLINE") Delimiter delimiter) {
+        return String.join(delimiter.getDelimiter(), service.readMojang(version, false));
     }
 
     @ResponseBody
     @GetMapping(value = "/mojang/{version}/server", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String getMojangServerMappings(@PathVariable String version) {
-        return String.join("\n", service.readMojang(version, true));
+    public String getMojangServerMappings(@PathVariable String version,
+                                          @RequestParam(value = "delimiter", defaultValue = "NEWLINE") Delimiter delimiter) {
+        return String.join(delimiter.getDelimiter(), service.readMojang(version, true));
     }
 
     @ResponseBody
     @GetMapping(value = "/spigot/{version}", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String getSpigotMappings(@PathVariable String version) {
-        return String.join("\n", service.readSpigot(version));
+    public String getSpigotMappings(@PathVariable String version,
+                                    @RequestParam(value = "delimiter", defaultValue = "NEWLINE") Delimiter delimiter) {
+        return String.join(delimiter.getDelimiter(), service.readSpigot(version));
     }
 
     @ResponseBody
     @GetMapping(value = "/yarn/{version}", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String getYarnMappings(@PathVariable String version) {
-        return String.join("\n", service.readYarn(version));
+    public String getYarnMappings(@PathVariable String version,
+                                  @RequestParam(value = "delimiter", defaultValue = "NEWLINE") Delimiter delimiter) {
+        return String.join(delimiter.getDelimiter(), service.readYarn(version));
     }
 }

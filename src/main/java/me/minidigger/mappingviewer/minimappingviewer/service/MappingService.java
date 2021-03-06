@@ -35,6 +35,8 @@ public class MappingService {
 
     private static final Logger log = LoggerFactory.getLogger(MappingService.class);
 
+    public static boolean forceRefresh = true;
+
     private final MojangService mojangService;
     private final SpigotService spigotService;
     private final YarnService yarnService;
@@ -52,7 +54,7 @@ public class MappingService {
             return Collections.emptyList();
         }
         Path path = mappingFolder.resolve("notchToMojang.tsrg");
-        if (!Files.exists(path)) {
+        if (!Files.exists(path) || forceRefresh) {
             if (!createMojang(version, server)) {
                 return Collections.emptyList();
             }
@@ -105,7 +107,7 @@ public class MappingService {
             return Collections.emptyList();
         }
         Path path = mappingFolder.resolve("notchToSpigot.tsrg");
-        if (!Files.exists(path)) {
+        if (!Files.exists(path) || forceRefresh) {
             if (!createSpigot(version)) {
                 return Collections.emptyList();
             }
@@ -164,7 +166,7 @@ public class MappingService {
             return Collections.emptyList();
         }
         Path path = mappingFolder.resolve("notchToYarn.tsrg");
-        if (!Files.exists(path)) {
+        if (!Files.exists(path) || forceRefresh) {
             if (!createYarn(version)) {
                 return Collections.emptyList();
             }

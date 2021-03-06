@@ -1,5 +1,6 @@
 package me.minidigger.mappingviewer.minimappingviewer.util;
 
+import org.cadixdev.bombe.type.signature.MethodSignature;
 import org.cadixdev.lorenz.MappingSet;
 import org.cadixdev.lorenz.merge.MappingSetMergerHandler;
 import org.cadixdev.lorenz.merge.MergeContext;
@@ -10,8 +11,13 @@ import org.cadixdev.lorenz.model.InnerClassMapping;
 import org.cadixdev.lorenz.model.MethodMapping;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 
+import java.util.HashMap;
+import java.util.Map;
+
 // from https://github.com/DemonWav/paperweight/blob/master/src/main/kotlin/tasks/GenerateSpigotSrgs.kt
 public class SpigotPackageMergerHandler implements MappingSetMergerHandler {
+
+  private Map<String, Map<String, Map<String, String>>> synths = new HashMap<>();
 
     @Override
     public MergeResult<TopLevelClassMapping> mergeTopLevelClassMappings(TopLevelClassMapping left, TopLevelClassMapping right, MappingSet target, MergeContext context) {
@@ -64,7 +70,25 @@ public class SpigotPackageMergerHandler implements MappingSetMergerHandler {
 
     @Override
     public FieldMapping mergeDuplicateFieldMappings(FieldMapping left, FieldMapping strictRightDuplicate, FieldMapping looseRightDuplicate, FieldMapping strictRightContinuation, FieldMapping looseRightContinuation, ClassMapping<?, ?> target, MergeContext context) {
-        return target.createFieldMapping(left.getObfuscatedName(), left.getDeobfuscatedName());
+        FieldMapping right;
+        if (strictRightDuplicate != null) {
+            right = strictRightDuplicate;
+        } else {
+            if (looseRightDuplicate != null) {
+                right = looseRightDuplicate;
+            } else {
+                if (strictRightContinuation != null) {
+                    right = strictRightContinuation;
+                } else {
+                    if (looseRightContinuation != null) {
+                        right = looseRightContinuation;
+                    } else {
+                        right = left;
+                    }
+                }
+            }
+        }
+        return target.createFieldMapping(right.getSignature(), left.getDeobfuscatedName());
     }
 
     @Override
@@ -74,7 +98,55 @@ public class SpigotPackageMergerHandler implements MappingSetMergerHandler {
 
     @Override
     public MergeResult<MethodMapping> mergeDuplicateMethodMappings(MethodMapping left, MethodMapping strictRightDuplicate, MethodMapping looseRightDuplicate, MethodMapping strictRightContinuation, MethodMapping looseRightContinuation, ClassMapping<?, ?> target, MergeContext context) {
-        return new MergeResult<>(target.createMethodMapping(left.getSignature(), left.getObfuscatedName()));
+      // Check if Spigot calls this mapping something else
+      Map<String, String> synthMethods = synths.getOrDefault(left.getParent().getFullDeobfuscatedName(), new HashMap<>()).getOrDefault(left.getObfuscatedDescriptor(), new HashMap<>());
+      String newName = synthMethods.get(left.getObfuscatedName());
+      if (newName != null) {
+          MethodMapping newLeftMapping = (MethodMapping) left.getParent().getMethodMapping(new MethodSignature(newName, left.getDescriptor())).orElse(null);
+          MethodMapping newMapping;
+          if (newLeftMapping != null) {
+              newMapping = target.getOrCreateMethodMapping(newLeftMapping.getSignature());
+              newMapping.setDeobfuscatedName(left.getDeobfuscatedName());
+          } else {
+              newMapping = target.getOrCreateMethodMapping(left.getSignature());
+              newMapping.setDeobfuscatedName(newName);
+          }
+          return new MergeResult<>(newMapping);
+      } else {
+          MethodMapping newMapping = target.getOrCreateMethodMapping(left.getSignature());
+          newMapping.setDeobfuscatedName(left.getDeobfuscatedName());
+          return new MergeResult<>(newMapping);
+      }
+    }
+
+    @Override
+    public MergeResult<MethodMapping> addLeftMethodMapping(MethodMapping left, ClassMapping<?, ?> target, MergeContext context) {
+        // Check if Spigot maps this from a synthetic method name
+        String obfName = null;
+        Map<String, String > synthMethods = synths.getOrDefault(left.getParent().getFullObfuscatedName(), new HashMap<>()).get(left.getObfuscatedDescriptor());
+        if (synthMethods != null) {
+            // This is a reverse lookup
+            for (Map.Entry<String, String> entry : synthMethods.entrySet()) {
+                if (left.getObfuscatedName().equals(entry.getValue())) {
+                    obfName = entry.getKey();
+                    break;
+                }
+            }
+        }
+
+        if (obfName == null) {
+            return new MergeResult<>(null);
+        }
+
+        MethodMapping newMapping = target.getOrCreateMethodMapping(obfName, left.getDescriptor());
+        newMapping.setDeobfuscatedName(left.getDeobfuscatedName());
+        return new MergeResult<>(newMapping);
+    }
+
+    @Override
+    public FieldMapping addLeftFieldMapping(FieldMapping left, ClassMapping<?, ?> target, MergeContext context) {
+        // We don't want mappings Spigot thinks exist but don't
+        return null;
     }
 
     @Override
@@ -85,8 +157,22 @@ public class SpigotPackageMergerHandler implements MappingSetMergerHandler {
 
     @Override
     public MergeResult<MethodMapping> addRightMethodMapping(MethodMapping right, ClassMapping<?, ?> target, MergeContext context) {
-        // disable mojang member mappings
-        return new MergeResult<>(null);
+      // Check if spigot changes this method automatically
+      Map<String, String> synthMethods = synths.getOrDefault(right.getParent().getFullObfuscatedName(), new HashMap<>()).getOrDefault(right.getObfuscatedDescriptor(), new HashMap<>());
+      String newName = synthMethods.get(right.getObfuscatedName());
+      if (newName == null) {
+          return new MergeResult<>(null);
+      }
+
+      ClassMapping<?, ?> newClassMapping = context.getLeft().getClassMapping(right.getParent().getFullObfuscatedName()).orElse(null);
+      MethodMapping newMethodMapping = newClassMapping != null ? newClassMapping.getMethodMapping(new MethodSignature(newName, right.getDescriptor())).orElse(null) : null;
+      MethodMapping newMapping = target.getOrCreateMethodMapping(right.getSignature());
+      if (newMethodMapping != null) {
+          newMapping.setDeobfuscatedName(newMethodMapping.getDeobfuscatedName());
+      } else {
+          newMapping.setDeobfuscatedName(newName);
+      }
+      return new MergeResult<>(newMapping);
     }
 
     private String prependPackage(String name) {
