@@ -42,9 +42,9 @@ export default {
     fields() {
       const index = this.item.lines.findIndex(t => t.includes("("));
       if (index !== -1) {
-        return this.item.lines.slice(1, index - 1);
+        return this.item.lines.slice(0, index);
       } else {
-        return this.item.lines.slice(1, this.item.lines.length)
+        return this.item.lines.slice(0, this.item.lines.length)
       }
     },
     methods() {
