@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const corsanywhere = "https://corsanywhere.minidigger.me/";
+const corsanywhere = "https://corsanywhere.benndorf.dev/";
 const versionManifestUrl =
   "https://launchermeta.mojang.com/mc/game/version_manifest.json";
 
