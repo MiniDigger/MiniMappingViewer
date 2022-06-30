@@ -2,7 +2,7 @@ import axios from "axios";
 
 const corsanywhere = "https://corsanywhere.benndorf.dev/";
 const versionManifestUrl =
-  "https://launchermeta.mojang.com/mc/game/version_manifest.json";
+  "https://piston-meta.mojang.com/mc/game/version_manifest.json";
 
 export const loadVersions = ({ commit }) => {
   return new Promise((resolve, reject) => {
