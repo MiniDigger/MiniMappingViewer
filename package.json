@@ -14,7 +14,7 @@
   "dependencies": {
     "@quasar/extras": "1.9.10",
     "axios": "0.21.0",
-    "quasar": "1.14.5"
+    "quasar": "2.17.1"
   },
   "devDependencies": {
     "@quasar/app": "1.9.6",
